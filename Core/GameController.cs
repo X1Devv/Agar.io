@@ -10,15 +10,22 @@ namespace AgarIO.Core
         private Player player;
         private List<GameObject> gameObjects = new();
         private FoodFactory foodFactory;
+        private EnemyFactory enemyFactory;
         private Clock clock = new();
-        private float foodSpawnTimer = 0f;
+        private const int InitialEnemyCount = 60;
         private const float FoodSpawnInterval = 0.05f;
+        private float timeSinceLastFoodSpawn = 0f;
         private const float MinPlayerSize = 10f;
 
-        public GameController(Player player, FloatRect mapBounds)
+        public GameController(Player player, FloatRect mapBorder)
         {
             this.player = player;
-            foodFactory = new FoodFactory(mapBounds);
+            foodFactory = new FoodFactory(mapBorder);
+            enemyFactory = new EnemyFactory(mapBorder);
+            for (int i = 0; i < InitialEnemyCount; i++)
+            {
+                gameObjects.Add(enemyFactory.CreateEnemy());
+            }
         }
 
         public void Update()
@@ -26,25 +33,43 @@ namespace AgarIO.Core
             float deltaTime = clock.Restart().AsSeconds();
             player.Update(deltaTime);
 
-            foodSpawnTimer += deltaTime;
-            if (foodSpawnTimer >= FoodSpawnInterval)
+            timeSinceLastFoodSpawn += deltaTime;
+            if (timeSinceLastFoodSpawn >= FoodSpawnInterval)
             {
-                foodSpawnTimer = 0;
+                timeSinceLastFoodSpawn = 0f;
                 gameObjects.Add(foodFactory.CreateFood());
             }
 
             for (int i = gameObjects.Count - 1; i >= 0; i--)
             {
-                if (gameObjects[i] is Food food && food.IsEaten(player.Position, player.GetRadius()))
+                if (gameObjects[i] is Food food)
                 {
-                    player.Grow(food.GetGrowthBonus());
+                    if (player.GetRadius() >= MinPlayerSize && food.IsEaten(player.Position, player.GetRadius()))
+                    {
+                        player.Grow(food.GetGrowthBonus());
 
-                    if (player.GetRadius() < MinPlayerSize)
+                        if (player.GetRadius() < MinPlayerSize)
+                        {
+                            player.SetRadius(MinPlayerSize);
+                        }
+
+                        gameObjects.RemoveAt(i);
+                    }
+                }
+                else if (gameObjects[i] is Enemy enemy)
+                {
+                    if (player.GetRadius() >= MinPlayerSize && player.GetRadius() > enemy.GetRadius())
+                    {
+                        if (enemy.IsEaten(player.Position, player.GetRadius()))
+                        {
+                            player.Grow(enemy.GetRadius());
+                            gameObjects.RemoveAt(i);
+                        }
+                    }
+                    else if (enemy.IsEaten(player.Position, enemy.GetRadius()) && enemy.GetRadius() > player.GetRadius())
                     {
                         player.SetRadius(MinPlayerSize);
                     }
-
-                    gameObjects.RemoveAt(i);
                 }
             }
 

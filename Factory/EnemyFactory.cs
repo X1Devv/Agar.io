@@ -4,22 +4,24 @@ using SFML.System;
 
 namespace AgarIO.Factory
 {
-    public class FoodFactory
+    public class EnemyFactory
     {
         private FloatRect mapBorder;
         private Random random = new Random();
 
-        public FoodFactory(FloatRect mapBorder)
+        public EnemyFactory(FloatRect mapBorder)
         {
             this.mapBorder = mapBorder;
         }
 
-        public Food CreateFood()
+        public Enemy CreateEnemy()
         {
             float x = (float)(random.NextDouble() * mapBorder.Width + mapBorder.Left);
             float y = (float)(random.NextDouble() * mapBorder.Height + mapBorder.Top);
+            float size = (float)(random.Next(10, 30));
+            Color color = Color.Red;
 
-            return new Food(new Vector2f(x, y));
+            return new Enemy(new Vector2f(x, y), size, mapBorder);
         }
     }
 }

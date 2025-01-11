@@ -31,8 +31,8 @@ namespace AgarIO.GameObjects
             else if (chance <= 95)
             {
                 FoodColor = Color.Black;
-                Size = 20;
-                GrowthBonus = -10;
+                Size = 50;
+                GrowthBonus = -30;
             }
 
             shape = new CircleShape(Size)

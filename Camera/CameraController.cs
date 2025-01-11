@@ -9,13 +9,13 @@ namespace Agar.io_sfml.Camera
         private View cameraView;
         private RenderWindow window;
         private Player player;
-        private FloatRect mapBounds;
+        private FloatRect mapBorder;
 
-        public CameraController(RenderWindow window, Player player, FloatRect mapBounds)
+        public CameraController(RenderWindow window, Player player, FloatRect mapBorder)
         {
             this.window = window;
             this.player = player;
-            this.mapBounds = mapBounds;
+            this.mapBorder = mapBorder;
             cameraView = new View(window.GetView());
         }
 
@@ -26,8 +26,8 @@ namespace Agar.io_sfml.Camera
             float cameraHalfWidth = cameraView.Size.X / 2;
             float cameraHalfHeight = cameraView.Size.Y / 2;
 
-            float PosX = Math.Max(mapBounds.Left + cameraHalfWidth, Math.Min(cameraView.Center.X, mapBounds.Left + mapBounds.Width - cameraHalfWidth));
-            float PosY = Math.Max(mapBounds.Top + cameraHalfHeight, Math.Min(cameraView.Center.Y, mapBounds.Top + mapBounds.Height - cameraHalfHeight));
+            float PosX = Math.Max(mapBorder.Left + cameraHalfWidth, Math.Min(cameraView.Center.X, mapBorder.Left + mapBorder.Width - cameraHalfWidth));
+            float PosY = Math.Max(mapBorder.Top + cameraHalfHeight, Math.Min(cameraView.Center.Y, mapBorder.Top + mapBorder.Height - cameraHalfHeight));
 
             cameraView.Center = new Vector2f(PosX, PosY);
 
