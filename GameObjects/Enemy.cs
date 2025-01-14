@@ -1,80 +1,64 @@
-﻿using SFML.Graphics;
+﻿using Agar.io_sfml.GameObjects;
+using Agar.io_sfml.Input;
+using SFML.Graphics;
 using SFML.System;
 
-namespace AgarIO.GameObjects
+public class Enemy : GameObject
 {
-    public class Enemy : GameObject
+    private CircleShape shape;
+    private EnemyInput inputHandler;
+    public float Radius { get; private set; }
+    private Vector2f direction;
+    private const float Speed = 200f;
+
+    private List<GameObject> gameObjects;
+
+    public Enemy(Vector2f position, float initialSize)
     {
-        private CircleShape shape;
-        public float Radius { get; private set; }
-        public Vector2f Position { get; private set; }
-        
-        private FloatRect mapBorder;
-        private Vector2f direction;
+        Radius = initialSize;
+        Position = position;
 
-        private const uint MaxMovementCount = 50;
-        private uint movementCounter = 0;
-        private const float Speed = 100f;
-
-        public Enemy(Vector2f position, float initialSize, FloatRect mapBorder)
+        shape = new CircleShape(Radius)
         {
-            Radius = initialSize;
-            Position = position;
-            this.mapBorder = mapBorder;
+            FillColor = Color.Red,
+            Origin = new Vector2f(Radius, Radius),
+            Position = Position
+        };
 
-            shape = new CircleShape(Radius)
-            {
-                FillColor = Color.Red,
-                Origin = new Vector2f(Radius, Radius),
-                Position = Position
-            };
+        inputHandler = new EnemyInput();
+    }
+    public void SetGameObjects(List<GameObject> objects)
+    {
+        gameObjects = objects;
+    }
 
-            RandomizeDirection();
-        }
-        public override void Update(float deltaTime)
+    public override void Update(float deltaTime)
+    {
+        if (gameObjects != null)
         {
-            if (movementCounter >= MaxMovementCount)
-            {
-                RandomizeDirection();
-                movementCounter = 0;
-            }
-
+            direction = inputHandler.GetDirection(Position, Radius, gameObjects);
             Position += direction * Speed * deltaTime;
-
-            if (Position.X < mapBorder.Left || Position.X > mapBorder.Left + mapBorder.Width)
-                direction.X = -direction.X;
-
-            if (Position.Y < mapBorder.Top || Position.Y > mapBorder.Top + mapBorder.Height)
-                direction.Y = -direction.Y;
-
             shape.Position = Position;
-
-            movementCounter++;
-        }
-
-        public override void Render(RenderWindow window)
-        {
-            window.Draw(shape);
-        }
-
-        public float GetRadius() => Radius;
-
-
-        public bool IsEaten(Vector2f playerPosition, float playerRadius)
-        {
-            float distance = MathF.Sqrt(MathF.Pow(Position.X - playerPosition.X, 2) + MathF.Pow(Position.Y - playerPosition.Y, 2));
-            return distance < playerRadius + Radius;
-        }
-
-        private void RandomizeDirection()
-        {
-            direction = new Vector2f(
-                (float)(Random.Shared.NextDouble() * 2 - 1),
-                (float)(Random.Shared.NextDouble() * 2 - 1)
-            );
-
-            if (direction != new Vector2f(0, 0))
-                direction /= MathF.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
         }
     }
+
+    public override void Render(RenderWindow window)
+    {
+        window.Draw(shape);
+    }
+
+    public void Grow(float amount)
+    {
+        SetRadius(Radius + amount / (1 + Radius * 0.1f));
+    }
+
+    public void SetRadius(float newRadius)
+    {
+        Radius = MathF.Max(newRadius, 0);
+        shape.Radius = Radius;
+        shape.Origin = new Vector2f(Radius, Radius);
+    }
+
+    public float GetRadius() => Radius;
 }
+

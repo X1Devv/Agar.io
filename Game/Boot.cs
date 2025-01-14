@@ -1,11 +1,11 @@
-﻿using AgarIO.GameObjects;
+﻿using Agar.io_sfml.Input;
 using SFML.Graphics;
 using SFML.System;
-using AgarIO.Core;
-using Agar.io_sfml.Input;
+using Agar.io_sfml.GameRule;
+using Agar.io_sfml.GameObjects;
 using SFML.Window;
 
-namespace AgarIO.Game
+namespace Agar.io_sfml.Game
 {
     public class Boot
     {
@@ -13,13 +13,13 @@ namespace AgarIO.Game
         {
             FloatRect mapBorder = new FloatRect(0, 0, 4000, 4000);
             RenderWindow window = new RenderWindow(new VideoMode(1200, 800), "Agar.io");
-            
-            Input input = new Input();
+
+            PlayerInput input = new PlayerInput();
             Player player = new Player(input, new Vector2f(400, 300), window);
-            
+
             GameController gameController = new GameController(player, mapBorder);
             Game game = new Game(gameController, window);
-            
+
             game.Run();
         }
     }

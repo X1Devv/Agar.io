@@ -1,13 +1,13 @@
-﻿using AgarIO.GameObjects;
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using SFML.System;
 
-namespace AgarIO.Factory
+
+namespace Agar.io_sfml.Factory
 {
     public class EnemyFactory
     {
         private FloatRect mapBorder;
-        private Random random = new Random();
+        private Random random = new();
 
         public EnemyFactory(FloatRect mapBorder)
         {
@@ -18,10 +18,9 @@ namespace AgarIO.Factory
         {
             float x = (float)(random.NextDouble() * mapBorder.Width + mapBorder.Left);
             float y = (float)(random.NextDouble() * mapBorder.Height + mapBorder.Top);
-            float size = (float)(random.Next(10, 30));
-            Color color = Color.Red;
+            float size = (float)(random.NextDouble() * 20 + 10);
 
-            return new Enemy(new Vector2f(x, y), size, mapBorder);
+            return new Enemy(new Vector2f(x, y), size);
         }
     }
 }

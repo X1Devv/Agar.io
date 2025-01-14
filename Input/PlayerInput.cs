@@ -3,7 +3,7 @@ using SFML.Window;
 
 namespace Agar.io_sfml.Input
 {
-    public class Input
+    public class PlayerInput
     {
         public Vector2f GetMovement()
         {

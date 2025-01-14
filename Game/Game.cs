@@ -1,7 +1,7 @@
-﻿using AgarIO.Core;
+﻿using Agar.io_sfml.GameRule;
 using SFML.Graphics;
 
-namespace AgarIO.Game
+namespace Agar.io_sfml.Game
 {
     public class Game
     {

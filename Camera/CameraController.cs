@@ -1,5 +1,5 @@
 ﻿using SFML.Graphics;
-using AgarIO.GameObjects;
+using Agar.io_sfml.GameObjects;
 using SFML.System;
 
 namespace Agar.io_sfml.Camera

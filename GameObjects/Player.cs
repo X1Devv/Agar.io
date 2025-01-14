@@ -1,21 +1,22 @@
 ﻿using Agar.io_sfml.Camera;
+using Agar.io_sfml.GameObjects;
 using Agar.io_sfml.Input;
 using SFML.Graphics;
 using SFML.System;
 
-namespace AgarIO.GameObjects
+namespace Agar.io_sfml.GameObjects
 {
     public class Player : GameObject
     {
-        private Input inputHandler;
+        private PlayerInput inputHandler;
         private CircleShape shape;
-        private float speed = 100f;
+        private float speed = 200f;
 
         public Vector2f Position { get; set; }
         public RenderWindow Window { get; private set; }
         public float Radius { get; private set; }
 
-        public Player(Input inputHandler, Vector2f startPosition, RenderWindow window)
+        public Player(PlayerInput inputHandler, Vector2f startPosition, RenderWindow window)
         {
             this.inputHandler = inputHandler;
             Position = startPosition;
