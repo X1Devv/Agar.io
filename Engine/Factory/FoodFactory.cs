@@ -1,8 +1,8 @@
-﻿using Agar.io_sfml.GameObjects;
+﻿using Agar.io_sfml.Game.GameObjects;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.Factory
+namespace Agar.io_sfml.Engine.Factory
 {
     public class FoodFactory
     {

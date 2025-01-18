@@ -1,7 +1,7 @@
 ﻿using SFML.System;
 using SFML.Window;
 
-namespace Agar.io_sfml.Input
+namespace Agar.io_sfml.Engine.Input
 {
     public class PlayerInput
     {

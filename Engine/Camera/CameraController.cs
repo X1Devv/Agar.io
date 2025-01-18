@@ -1,8 +1,8 @@
 ﻿using SFML.Graphics;
-using Agar.io_sfml.GameObjects;
 using SFML.System;
+using Agar.io_sfml.Game.GameObjects;
 
-namespace Agar.io_sfml.Camera
+namespace Agar.io_sfml.Engine.Camera
 {
     class CameraController
     {

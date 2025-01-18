@@ -1,7 +1,7 @@
-﻿using Agar.io_sfml.GameObjects;
+﻿using Agar.io_sfml.Game.GameObjects;
 using SFML.System;
 
-namespace Agar.io_sfml.Input
+namespace Agar.io_sfml.Engine.Input
 {
     public class EnemyInput
     {

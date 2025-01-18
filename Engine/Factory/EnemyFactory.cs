@@ -2,7 +2,7 @@
 using SFML.System;
 
 
-namespace Agar.io_sfml.Factory
+namespace Agar.io_sfml.Engine.Factory
 {
     public class EnemyFactory
     {

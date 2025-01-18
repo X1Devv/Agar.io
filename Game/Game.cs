@@ -1,4 +1,4 @@
-﻿using Agar.io_sfml.GameRule;
+﻿using Agar.io_sfml.Game.GameRule;
 using SFML.Graphics;
 
 namespace Agar.io_sfml.Game
@@ -12,7 +12,7 @@ namespace Agar.io_sfml.Game
         {
             this.gameController = gameController;
             this.window = window;
-            window.SetFramerateLimit(60);
+            window.SetFramerateLimit(180);
             window.Closed += WindowClosed;
         }
 

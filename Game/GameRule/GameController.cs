@@ -1,9 +1,9 @@
 ﻿using SFML.Graphics;
-using Agar.io_sfml.GameObjects;
-using Agar.io_sfml.Factory;
 using SFML.System;
+using Agar.io_sfml.Engine.Factory;
+using Agar.io_sfml.Game.GameObjects;
 
-namespace Agar.io_sfml.GameRule
+namespace Agar.io_sfml.Game.GameRule
 {
     public class GameController
     {
@@ -12,15 +12,15 @@ namespace Agar.io_sfml.GameRule
 
         private FoodFactory foodFactory;
         private EnemyFactory enemyFactory;
-        
+
         private Clock clock = new();
-        
+
         private const int InitialEnemyCount = 30;
         private const float FoodSpawnInterval = 0.05f;
-        
+
         private float timeSinceLastFoodSpawn = 0f;
-        private const float MinPlayerSize = 10f;
-        
+        private const float MinPlayerSize = 20f;
+
         private InteractionHandler interactionHandler;
 
         public GameController(Player player, FloatRect mapBorder)

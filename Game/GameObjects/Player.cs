@@ -1,15 +1,17 @@
-﻿using Agar.io_sfml.Camera;
-using Agar.io_sfml.GameObjects;
-using Agar.io_sfml.Input;
+﻿using Agar.io_sfml.Engine.Camera;
+using Agar.io_sfml.Engine.Input;
+using Agar.io_sfml.Engine.Utils;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.GameObjects
+namespace Agar.io_sfml.Game.GameObjects
 {
     public class Player : GameObject
     {
         private PlayerInput inputHandler;
         private CircleShape shape;
+        TextureManager textureManager = new TextureManager();
+        private Texture playerTexture;
         private float speed = 200f;
 
         public Vector2f Position { get; set; }
@@ -21,19 +23,22 @@ namespace Agar.io_sfml.GameObjects
             this.inputHandler = inputHandler;
             Position = startPosition;
             Window = window;
-            shape = new CircleShape(20)
+            playerTexture = textureManager.LoadTexture("Game/Skin/PlayerSkin.png");
+            
+            shape = new CircleShape(25)
             {
-                FillColor = Color.Blue,
-                Origin = new Vector2f(20, 20)
+                Texture = playerTexture,
+                Origin = new Vector2f(25, 25)
             };
         }
+
 
         public void Grow(float amount)
         {
             shape.Radius += amount;
-            shape.Radius = shape.Radius;
             shape.Origin = new Vector2f(shape.Radius, shape.Radius);
         }
+
         public void SetRadius(float Radius)
         {
             this.Radius = Radius;
@@ -56,7 +61,7 @@ namespace Agar.io_sfml.GameObjects
         {
             window.Draw(shape);
         }
-        
+
         public float GetRadius() => shape.Radius;
     }
 }

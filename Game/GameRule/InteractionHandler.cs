@@ -1,8 +1,8 @@
-﻿using Agar.io_sfml.GameObjects;
+﻿using Agar.io_sfml.Game.GameObjects;
 using SFML.System;
 
 
-namespace Agar.io_sfml.GameRule
+namespace Agar.io_sfml.Game.GameRule
 {
     public class InteractionHandler
     {
@@ -58,7 +58,7 @@ namespace Agar.io_sfml.GameRule
 
             if (distanceToEnemy <= playerRadius + enemyRadius)
             {
-                float overlap = (playerRadius + enemyRadius) - distanceToEnemy;
+                float overlap = playerRadius + enemyRadius - distanceToEnemy;
 
                 if (playerRadius > enemyRadius)
                 {

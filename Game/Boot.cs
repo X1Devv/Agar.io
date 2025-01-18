@@ -1,9 +1,9 @@
-﻿using Agar.io_sfml.Input;
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using SFML.System;
-using Agar.io_sfml.GameRule;
-using Agar.io_sfml.GameObjects;
 using SFML.Window;
+using Agar.io_sfml.Game.GameRule;
+using Agar.io_sfml.Engine.Input;
+using Agar.io_sfml.Game.GameObjects;
 
 namespace Agar.io_sfml.Game
 {

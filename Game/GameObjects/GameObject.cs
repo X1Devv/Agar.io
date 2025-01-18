@@ -1,7 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.GameObjects
+namespace Agar.io_sfml.Game.GameObjects
 {
     public abstract class GameObject
     {
