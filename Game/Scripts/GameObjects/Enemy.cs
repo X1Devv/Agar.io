@@ -1,5 +1,5 @@
-﻿using Agar.io_sfml.Engine.Input;
-using Agar.io_sfml.Game.GameObjects;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+using Agar.io_sfml.Game.Scripts.Input;
 using SFML.Graphics;
 using SFML.System;
 

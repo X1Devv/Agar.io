@@ -1,9 +1,9 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using Agar.io_sfml.Engine.Factory;
-using Agar.io_sfml.Game.GameObjects;
+using Agar.io_sfml.Game.Scripts.GameObjects;
 
-namespace Agar.io_sfml.Game.GameRule
+namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class GameController
     {

@@ -1,14 +1,14 @@
-﻿using Agar.io_sfml.Game.GameRule;
+﻿using Agar.io_sfml.Game.Scripts.GameRule;
 using SFML.Graphics;
 
 namespace Agar.io_sfml.Game
 {
-    public class Game
+    public class GameLoop
     {
         private RenderWindow window;
         private GameController gameController;
 
-        public Game(GameController gameController, RenderWindow window)
+        public GameLoop(GameController gameController, RenderWindow window)
         {
             this.gameController = gameController;
             this.window = window;
@@ -26,11 +26,6 @@ namespace Agar.io_sfml.Game
                 gameController.Render(window);
                 window.Display();
             }
-        }
-
-        public void DispatchEvents()
-        {
-            window.DispatchEvents();
         }
 
         private void WindowClosed(object sender, EventArgs e)

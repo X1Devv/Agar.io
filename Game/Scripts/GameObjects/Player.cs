@@ -1,10 +1,10 @@
 ﻿using Agar.io_sfml.Engine.Camera;
-using Agar.io_sfml.Engine.Input;
 using Agar.io_sfml.Engine.Utils;
+using Agar.io_sfml.Game.Scripts.Input;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.Game.GameObjects
+namespace Agar.io_sfml.Game.Scripts.GameObjects
 {
     public class Player : GameObject
     {
@@ -23,8 +23,8 @@ namespace Agar.io_sfml.Game.GameObjects
             this.inputHandler = inputHandler;
             Position = startPosition;
             Window = window;
-            playerTexture = textureManager.LoadTexture("Game/Skin/PlayerSkin.png");
-            
+            playerTexture = textureManager.LoadTexture("Game\\Textures\\Skin\\PlayerSkin.png");
+
             shape = new CircleShape(25)
             {
                 Texture = playerTexture,

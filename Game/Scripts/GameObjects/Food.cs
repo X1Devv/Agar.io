@@ -1,7 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.Game.GameObjects
+namespace Agar.io_sfml.Game.Scripts.GameObjects
 {
     public class Food : GameObject
     {

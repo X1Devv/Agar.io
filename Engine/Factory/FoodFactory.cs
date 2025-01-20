@@ -1,4 +1,4 @@
-﻿using Agar.io_sfml.Game.GameObjects;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
 using SFML.Graphics;
 using SFML.System;
 
