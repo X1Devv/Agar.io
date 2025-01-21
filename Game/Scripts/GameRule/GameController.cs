@@ -2,6 +2,9 @@
 using SFML.System;
 using Agar.io_sfml.Engine.Factory;
 using Agar.io_sfml.Game.Scripts.GameObjects;
+using Agar.io_sfml.Game.Scripts.Input;
+using SFML.Window;
+using System.Numerics;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
 {
@@ -62,6 +65,38 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     obj.Update(deltaTime);
                 }
             }
+
+            if (Keyboard.IsKeyPressed(Keyboard.Key.F))
+            {
+                Swap();
+            }
+        }
+
+        private void Swap()
+        {
+            Enemy nearestEnemy = null;
+            float shortestDistance = float.MaxValue;
+
+            foreach (var obj in gameObjects)
+            {
+                if (obj is Enemy enemy)
+                {
+                    float distance = Distance(player.Position, enemy.Position);
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        nearestEnemy = enemy;
+                    }
+                }
+            }
+                Vector2f temp = player.Position;
+                player.SetPos(nearestEnemy.Position);
+                nearestEnemy.SetPos(temp);
+        }
+
+        private float Distance(Vector2f a, Vector2f b)
+        {
+            return MathF.Sqrt(MathF.Pow(a.X - b.X, 2) + MathF.Pow(a.Y - b.Y, 2));
         }
 
         public void Render(RenderWindow window)

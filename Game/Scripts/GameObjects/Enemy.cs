@@ -32,6 +32,13 @@ public class Enemy : GameObject
         gameObjects = objects;
     }
 
+    public void SetPos(Vector2f newPosition)
+    {
+        Position = newPosition;
+        shape.Position = newPosition;
+    }
+
+
     public override void Update(float deltaTime)
     {
         if (gameObjects != null)

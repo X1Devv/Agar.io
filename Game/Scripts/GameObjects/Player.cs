@@ -56,6 +56,12 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
             cameraController.Update();
             cameraController.Apply();
         }
+        public void SetPos(Vector2f newPosition)
+        {
+            Position = newPosition;
+            shape.Position = newPosition;
+        }
+
 
         public override void Render(RenderWindow window)
         {
