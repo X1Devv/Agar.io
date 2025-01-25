@@ -24,11 +24,11 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
                 Position = position
             };
         }
+
         public int GetGrowthBonus()
         {
             return GrowthBonus;
         }
-
 
         public override void Update(float deltaTime) { }
 

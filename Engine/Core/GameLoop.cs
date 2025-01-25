@@ -21,8 +21,8 @@ namespace Agar.io_sfml.Game
             while (window.IsOpen)
             {
                 window.DispatchEvents();
-                window.Clear(new Color(188, 196, 196));
-                gameController.Update();
+                window.Clear(new Color(46, 47, 48));
+                gameController.Update(window);
                 gameController.Render(window);
                 window.Display();
             }

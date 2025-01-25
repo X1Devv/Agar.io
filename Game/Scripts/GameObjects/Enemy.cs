@@ -1,71 +1,40 @@
-﻿using Agar.io_sfml.Game.Scripts.GameObjects;
-using Agar.io_sfml.Game.Scripts.Input;
+﻿using Agar.io_sfml.Game.Scripts.Input;
 using SFML.Graphics;
 using SFML.System;
 
-public class Enemy : GameObject
+
+namespace Agar.io_sfml.Game.Scripts.GameObjects
 {
-    private CircleShape shape;
-    private EnemyInput inputHandler;
-    public float Radius { get; private set; }
-    private Vector2f direction;
-    private const float Speed = 200f;
-
-    private List<GameObject> gameObjects;
-
-    public Enemy(Vector2f position, float initialSize)
+    public class Enemy : Character
     {
-        Radius = initialSize;
-        Position = position;
+        private readonly EnemyController input;
+        private List<GameObject> gameObjects;
 
-        shape = new CircleShape(Radius)
+        public Enemy(Vector2f initialPosition, float initialRadius) : base(initialPosition, initialRadius, 200f, Color.Red)
         {
-            FillColor = Color.Red,
-            Origin = new Vector2f(Radius, Radius),
-            Position = Position
-        };
-
-        inputHandler = new EnemyInput();
-    }
-    public void SetGameObjects(List<GameObject> objects)
-    {
-        gameObjects = objects;
-    }
-
-    public void SetPos(Vector2f newPosition)
-    {
-        Position = newPosition;
-        shape.Position = newPosition;
-    }
-
-
-    public override void Update(float deltaTime)
-    {
-        if (gameObjects != null)
-        {
-            direction = inputHandler.GetDirection(Position, Radius, gameObjects);
-            Position += direction * Speed * deltaTime;
-            shape.Position = Position;
+            this.input = new EnemyController();
         }
-    }
 
-    public override void Render(RenderWindow window)
-    {
-        window.Draw(shape);
-    }
+        public override void Update(float deltaTime)
+        {
+            if (gameObjects != null)
+            {
+                Position += input.GetDirection(Position, Radius, gameObjects) * speed * deltaTime;
+                shape.Position = Position;
+            }
+        }
 
-    public void Grow(float amount)
-    {
-        SetRadius(Radius + amount / (1 + Radius * 0.1f));
-    }
+        public void SetGameObjects(List<GameObject> objects)
+        {
+            gameObjects = objects;
+        }
 
-    public void SetRadius(float newRadius)
-    {
-        Radius = MathF.Max(newRadius, 0);
-        shape.Radius = Radius;
-        shape.Origin = new Vector2f(Radius, Radius);
-    }
+        public void SetPos(Vector2f newPosition)
+        {
+            Position = newPosition;
+            shape.Position = newPosition;
+        }
 
-    public float GetRadius() => Radius;
+        public float GetRadius() => Radius;
+    }
 }
-

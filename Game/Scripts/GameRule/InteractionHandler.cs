@@ -1,5 +1,5 @@
 ﻿using Agar.io_sfml.Game.Scripts.GameObjects;
-using SFML.System;
+using Agar.io_sfml.Utils;
 
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
@@ -54,7 +54,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         {
             float playerRadius = player.GetRadius();
             float enemyRadius = enemy.Radius;
-            float distanceToEnemy = Distance(player.Position, enemy.Position);
+            float distanceToEnemy = MathUtils.Distance(player.Position, enemy.Position);
 
             if (distanceToEnemy <= playerRadius + enemyRadius)
             {
@@ -86,11 +86,6 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         private float ReductionOfGrowthBeyondTheRadius(float currentRadius, float initialGrowth)
         {
             return initialGrowth / (1 + currentRadius * 0.05f);
-        }
-
-        private float Distance(Vector2f a, Vector2f b)
-        {
-            return MathF.Sqrt(MathF.Pow(a.X - b.X, 2) + MathF.Pow(a.Y - b.Y, 2));
         }
     }
 }

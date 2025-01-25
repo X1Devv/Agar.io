@@ -28,9 +28,8 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
             if (isPlayer)
                 SetRadius(Radius + amount);
             else
-                SetRadius(Radius + amount / (1 + Radius * 0.02f));
+                SetRadius(Radius + amount / (1 + Radius * 0.01f));
         }
-
 
         public void SetRadius(float newRadius)
         {

@@ -1,6 +1,6 @@
-﻿using SFML.Graphics;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+using SFML.Graphics;
 using SFML.System;
-
 
 namespace Agar.io_sfml.Engine.Factory
 {

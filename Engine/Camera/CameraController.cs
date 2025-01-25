@@ -4,7 +4,7 @@ using Agar.io_sfml.Game.Scripts.GameObjects;
 
 namespace Agar.io_sfml.Engine.Camera
 {
-    class CameraController
+    public class CameraController
     {
         private View cameraView;
         private RenderWindow window;
@@ -36,7 +36,8 @@ namespace Agar.io_sfml.Engine.Camera
 
         public void Apply()
         {
-            window.SetView(cameraView);
+            if (cameraView != null)
+                window.SetView(cameraView);
         }
     }
 }

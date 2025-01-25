@@ -1,30 +1,32 @@
-﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+﻿using Agar.io_sfml.Engine.Interfaces;
+using Agar.io_sfml.Game.Scripts.GameObjects;
+using Agar.io_sfml.Utils;
 using SFML.System;
 
 namespace Agar.io_sfml.Game.Scripts.Input
 {
-    public class EnemyInput
+    public class EnemyController : IInput
     {
         private Random random = new();
         private Vector2f currentDirection;
         private int stepsToChangeDirection = 50;
         private int currentStep = 0;
 
-        public EnemyInput()
+        public EnemyController()
         {
             RandomizeDirection();
         }
 
         public Vector2f GetDirection(Vector2f currentPosition, float currentRadius, List<GameObject> gameObjects)
         {
-            Food nearestFood = null;
+            GameObject nearestFood = null;
             float nearestDistance = float.MaxValue;
 
             foreach (var obj in gameObjects)
             {
                 if (obj is Food food)
                 {
-                    float distanceToFood = Distance(currentPosition, food.Position);
+                    float distanceToFood = MathUtils.Distance(currentPosition, food.Position);
                     if (distanceToFood < nearestDistance)
                     {
                         nearestDistance = distanceToFood;
@@ -35,7 +37,7 @@ namespace Agar.io_sfml.Game.Scripts.Input
 
             if (nearestFood != null && nearestDistance <= 300)
             {
-                return Normalize(nearestFood.Position - currentPosition);
+                return MathUtils.Normalize(nearestFood.Position - currentPosition);
             }
 
             if (currentStep >= stepsToChangeDirection)
@@ -48,24 +50,15 @@ namespace Agar.io_sfml.Game.Scripts.Input
             return currentDirection;
         }
 
+        public void PerformAbility(Character character, List<GameObject> gameObjects){ }
+
         private void RandomizeDirection()
         {
             currentDirection = new Vector2f(
                 (float)(random.NextDouble() * 2 - 1),
                 (float)(random.NextDouble() * 2 - 1)
             );
-            currentDirection = Normalize(currentDirection);
-        }
-
-        private Vector2f Normalize(Vector2f vector)
-        {
-            float magnitude = MathF.Sqrt(vector.X * vector.X + vector.Y * vector.Y);
-            return magnitude > 0 ? vector / magnitude : new Vector2f(0, 0);
-        }
-
-        private float Distance(Vector2f a, Vector2f b)
-        {
-            return MathF.Sqrt(MathF.Pow(a.X - b.X, 2) + MathF.Pow(a.Y - b.Y, 2));
+            currentDirection = MathUtils.Normalize(currentDirection);
         }
     }
 }
