@@ -1,6 +1,6 @@
 ﻿using SFML.Graphics;
 
-namespace Agar.io_sfml.Engine.Factory
+namespace Agar.io_sfml.Game.Scripts.Config
 {
     public class FoodConfig
     {

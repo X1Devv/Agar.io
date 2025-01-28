@@ -1,11 +1,11 @@
-﻿using Agar.io_sfml.Engine.Interfaces;
+﻿using Agar.io_sfml.Engine.Core;
 using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Utils;
 using SFML.System;
 
 namespace Agar.io_sfml.Game.Scripts.Input
 {
-    public class EnemyController : IInput
+    public class EnemyController : Controller
     {
         private Random random = new();
         private Vector2f currentDirection;
@@ -17,9 +17,9 @@ namespace Agar.io_sfml.Game.Scripts.Input
             RandomizeDirection();
         }
 
-        public Vector2f GetDirection(Vector2f currentPosition, float currentRadius, List<GameObject> gameObjects)
+        public override Vector2f GetDirection(Vector2f currentPosition, float currentRadius, List<GameObject> gameObjects, float deltaTime)
         {
-            GameObject nearestFood = null;
+            Food nearestFood = null;
             float nearestDistance = float.MaxValue;
 
             foreach (var obj in gameObjects)
@@ -49,8 +49,6 @@ namespace Agar.io_sfml.Game.Scripts.Input
             currentStep++;
             return currentDirection;
         }
-
-        public void PerformAbility(Character character, List<GameObject> gameObjects){ }
 
         private void RandomizeDirection()
         {

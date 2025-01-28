@@ -1,85 +1,92 @@
-﻿using SFML.Graphics;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+using SFML.Graphics;
 using SFML.System;
-using Agar.io_sfml.Engine.Factory;
-using Agar.io_sfml.Game.Scripts.GameObjects;
-using Agar.io_sfml.Engine.Utils;
-using Agar.io_sfml.Engine.UI;
-using Agar.io_sfml.Engine.Camera;
 using Agar.io_sfml.Engine.Managers;
+using Agar.io_sfml.Engine.Factory;
+using Agar.io_sfml.Engine.Utils;
+using Agar.io_sfml.Engine.Camera;
+using Agar.io_sfml.Game.Scripts.Input;
+using Agar.io_sfml.Engine.Interfaces;
+using Agar.io_sfml.Game.Scripts.Config;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class GameController
     {
-        private Player player;
+        private Entity player;
         private GameObjectManager gameObjectManager;
-        
-        private Clock clock = new();
-        private Clock abilityCooldownClock = new();
-        
-        private const float FoodSpawnInterval = 0.01f;
-        private float timeSinceLastFoodSpawn = 0f;
-        
-        private const float AbilityCooldown = 5f;
-        private bool isAbilityReady = true;
 
-        private const float minPlayerSize = 20f;
+        private PlayerController playerController;
+        private FoodFactory foodFactory;
 
         private InteractionHandler interactionHandler;
-        
         private PlayerUI playerUI;
         private CameraController cameraController;
 
-        public GameController(Player player, FloatRect mapBorder, RenderWindow window)
+        private Clock clock = new();
+        private const float FoodSpawnInterval = 0.01f;
+        private float timeSinceLastFoodSpawn = 0f;
+
+        private float abilityCooldownTime = 5f;
+        private float timeSinceLastAbilityUse = 0f;
+
+        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, IAbility ability)
         {
             this.player = player;
+            gameObjectManager = new GameObjectManager();
+            interactionHandler = new InteractionHandler(20f);
 
-            var foodFactory = new FoodFactory(mapBorder, DefaultFoodConfigs());
-            var enemyFactory = new EnemyFactory(mapBorder);
+            playerController = new PlayerController(ability);
 
-            gameObjectManager = new GameObjectManager(foodFactory, enemyFactory);
+            foodFactory = new FoodFactory(mapBorder, DefaultFoodConfigs());
+            EnemyFactory enemyFactory = new EnemyFactory(mapBorder);
 
-            interactionHandler = new InteractionHandler(minPlayerSize);
+            for (int i = 0; i < 30; i++)
+                gameObjectManager.SpawnEnemy(enemyFactory.CreateEnemy());
+
+            gameObjectManager.SpawnFood(foodFactory.CreateFood());
+
             cameraController = new CameraController(window, player, mapBorder);
 
             TextureManager textureManager = new TextureManager();
-
-            playerUI = new PlayerUI(window, textureManager);
+            playerUI = new PlayerUI(window, textureManager, cameraController);
 
             playerUI.AddAbility("Game\\Textures\\AbilityButton\\SwapButton.png", () =>
             {
-                if (isAbilityReady)
+                if (timeSinceLastAbilityUse >= abilityCooldownTime)
                 {
-                    player.PerformAbility(gameObjectManager.GetAllObjects());
-                    isAbilityReady = false;
-                    abilityCooldownClock.Restart();
+                    playerController.PerformAbility(player, gameObjectManager.GetAllObjects());
+                    timeSinceLastAbilityUse = 0f;
                 }
             });
-
-            for (int i = 0; i < 30; i++)
-                gameObjectManager.SpawnEnemy();
         }
+
 
         public void Update(RenderWindow window)
         {
+            if (foodFactory == null)
+                return;
+
             float deltaTime = clock.Restart().AsSeconds();
             player.Update(deltaTime);
+
+            cameraController.Update();
+
+            timeSinceLastAbilityUse += deltaTime;
 
             timeSinceLastFoodSpawn += deltaTime;
             if (timeSinceLastFoodSpawn >= FoodSpawnInterval)
             {
                 timeSinceLastFoodSpawn = 0f;
-                gameObjectManager.SpawnFood();
+
+                var food = foodFactory.CreateFood();
+                gameObjectManager.SpawnFood(food);
             }
 
             interactionHandler.HandleInteractions(player, gameObjectManager.GetAllObjects(), deltaTime);
 
             gameObjectManager.UpdateObjects(deltaTime);
 
-            if (!isAbilityReady && abilityCooldownClock.ElapsedTime.AsSeconds() >= AbilityCooldown)
-                isAbilityReady = true;
-
-            cameraController.Update();
             playerUI.Update();
         }
 
@@ -88,8 +95,6 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             cameraController.Apply();
             player.Render(window);
             gameObjectManager.RenderObjects(window);
-
-            window.SetView(window.DefaultView);
             playerUI.Render();
         }
 

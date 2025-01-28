@@ -1,5 +1,5 @@
 ﻿using Agar.io_sfml.Game.Scripts.GameObjects;
-using Agar.io_sfml.Engine.Factory;
+using Agar.io_sfml.Engine.Core;
 using SFML.Graphics;
 
 namespace Agar.io_sfml.Engine.Managers
@@ -7,15 +7,6 @@ namespace Agar.io_sfml.Engine.Managers
     public class GameObjectManager
     {
         private List<GameObject> gameObjects = new();
-        
-        private FoodFactory foodFactory;
-        private EnemyFactory enemyFactory;
-
-        public GameObjectManager(FoodFactory foodFactory, EnemyFactory enemyFactory)
-        {
-            this.foodFactory = foodFactory;
-            this.enemyFactory = enemyFactory;
-        }
 
         public List<GameObject> GetAllObjects() => gameObjects;
 
@@ -29,27 +20,30 @@ namespace Agar.io_sfml.Engine.Managers
             gameObjects.Remove(obj);
         }
 
-        public void SpawnFood()
+        public void SpawnFood(GameObject food)
         {
-            gameObjects.Add(foodFactory.CreateFood());
+            gameObjects.Add(food);
         }
 
-        public void SpawnEnemy()
+        public void SpawnEnemy(GameObject enemy)
         {
-            gameObjects.Add(enemyFactory.CreateEnemy());
+            gameObjects.Add(enemy);
         }
 
         public void UpdateObjects(float deltaTime)
         {
             foreach (var obj in gameObjects)
             {
-                if (obj is Enemy enemy)
+                if (obj is Entity entity && entity.IsEnemy)
                 {
-                    enemy.SetGameObjects(gameObjects);
-                    enemy.Update(deltaTime);
+                    var direction = entity.GetController().GetDirection(entity.Position, entity.GetRadius(), gameObjects, deltaTime);
+                    entity.Position += direction * deltaTime * entity.GetRadius();
+                    entity.Update(deltaTime);
                 }
                 else
+                {
                     obj.Update(deltaTime);
+                }
             }
         }
 

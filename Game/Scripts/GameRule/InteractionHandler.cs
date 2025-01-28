@@ -1,6 +1,6 @@
 ﻿using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Utils;
-
+using Agar.io_sfml.Engine.Core;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
 {
@@ -13,27 +13,26 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             MinPlayerSize = minPlayerSize;
         }
 
-        public void HandleInteractions(Player player, List<GameObject> gameObjects, float deltaTime)
+        public void HandleInteractions(Entity player, List<GameObject> gameObjects, float deltaTime)
         {
             for (int i = gameObjects.Count - 1; i >= 0; i--)
             {
                 var obj = gameObjects[i];
 
-                switch (obj)
+                if (obj is Food food)
                 {
-                    case Food food:
-                        HandleFoodInteraction(player, gameObjects, food, i);
-                        break;
-                    case Enemy enemy:
-                        HandleEnemyInteraction(player, gameObjects, enemy, i, deltaTime);
-                        break;
+                    HandleFoodInteraction(player, gameObjects, food, i);
+                }
+                else if (obj is Entity enemy && enemy.IsEnemy)
+                {
+                    HandleEnemyInteraction(player, gameObjects, enemy, i, deltaTime);
                 }
             }
         }
 
-        private void HandleFoodInteraction(Player player, List<GameObject> gameObjects, Food food, int index)
+        private void HandleFoodInteraction(Entity player, List<GameObject> gameObjects, Food food, int index)
         {
-            if (food.IsEaten(player.Position, player.GetRadius()))
+            if (food.CollidesWith(player))
             {
                 player.Grow(ReductionOfGrowthBeyondTheRadius(player.GetRadius(), food.GetGrowthBonus()));
                 gameObjects.RemoveAt(index);
@@ -42,18 +41,19 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
             foreach (var obj in gameObjects)
             {
-                if (obj is Enemy enemy && food.IsEaten(enemy.Position, enemy.GetRadius()))
+                if (obj is Entity enemy && enemy.IsEnemy && food.CollidesWith(enemy))
                 {
-                    enemy.Grow(ReductionOfGrowthBeyondTheRadius(enemy.Radius, food.GetGrowthBonus()));
+                    enemy.Grow(ReductionOfGrowthBeyondTheRadius(enemy.GetRadius(), food.GetGrowthBonus()));
                     gameObjects.RemoveAt(index);
                     break;
                 }
             }
         }
-        private void HandleEnemyInteraction(Player player, List<GameObject> gameObjects, Enemy enemy, int index, float deltaTime)
+
+        private void HandleEnemyInteraction(Entity player, List<GameObject> gameObjects, Entity enemy, int index, float deltaTime)
         {
             float playerRadius = player.GetRadius();
-            float enemyRadius = enemy.Radius;
+            float enemyRadius = enemy.GetRadius();
             float distanceToEnemy = MathUtils.Distance(player.Position, enemy.Position);
 
             if (distanceToEnemy <= playerRadius + enemyRadius)
@@ -66,7 +66,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     player.Grow(growthAmount);
                     enemy.SetRadius(enemyRadius - overlap);
 
-                    if (enemyRadius <= MinPlayerSize)
+                    if (enemy.GetRadius() <= MinPlayerSize)
                     {
                         gameObjects.RemoveAt(index);
                     }
@@ -76,7 +76,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     float shrinkAmount = ReductionOfGrowthBeyondTheRadius(enemyRadius, overlap);
                     player.SetRadius(playerRadius - shrinkAmount);
 
-                    if (playerRadius <= MinPlayerSize)
+                    if (player.GetRadius() <= MinPlayerSize)
                     {
                         player.SetRadius(MinPlayerSize);
                     }
@@ -89,6 +89,3 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         }
     }
 }
-
-
-

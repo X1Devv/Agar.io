@@ -1,6 +1,6 @@
-﻿using SFML.Graphics;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+using SFML.Graphics;
 using SFML.System;
-using Agar.io_sfml.Game.Scripts.GameObjects;
 
 namespace Agar.io_sfml.Engine.Camera
 {
@@ -8,10 +8,10 @@ namespace Agar.io_sfml.Engine.Camera
     {
         private View cameraView;
         private RenderWindow window;
-        private Player player;
+        private Entity player;
         private FloatRect mapBorder;
 
-        public CameraController(RenderWindow window, Player player, FloatRect mapBorder)
+        public CameraController(RenderWindow window, Entity player, FloatRect mapBorder)
         {
             this.window = window;
             this.player = player;
@@ -38,6 +38,11 @@ namespace Agar.io_sfml.Engine.Camera
         {
             if (cameraView != null)
                 window.SetView(cameraView);
+        }
+
+        public View GetView()
+        {
+            return cameraView;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Agar.io_sfml.Game.Scripts.GameObjects;
+using Agar.io_sfml.Game.Scripts.Input;
 using SFML.Graphics;
 using SFML.System;
 
@@ -14,13 +15,14 @@ namespace Agar.io_sfml.Engine.Factory
             this.mapBorder = mapBorder;
         }
 
-        public Enemy CreateEnemy()
+        public Entity CreateEnemy()
         {
             float x = (float)(random.NextDouble() * mapBorder.Width + mapBorder.Left);
             float y = (float)(random.NextDouble() * mapBorder.Height + mapBorder.Top);
             float size = (float)(random.NextDouble() * 20 + 10);
 
-            return new Enemy(new Vector2f(x, y), size);
+            return new Entity(new EnemyController(), new Vector2f(x, y), size, 200f, true);
         }
+
     }
 }
