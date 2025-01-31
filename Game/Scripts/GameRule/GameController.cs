@@ -6,7 +6,7 @@ using Agar.io_sfml.Engine.Factory;
 using Agar.io_sfml.Engine.Utils;
 using Agar.io_sfml.Engine.Camera;
 using Agar.io_sfml.Game.Scripts.Input;
-using Agar.io_sfml.Engine.Interfaces;
+using Agar.io_sfml.Game.Scripts.Abilities;
 using Agar.io_sfml.Game.Scripts.Config;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
@@ -15,6 +15,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     {
         private Entity player;
         private GameObjectManager gameObjectManager;
+        private AbilitySystem abilitySystem;
 
         private PlayerController playerController;
         private FoodFactory foodFactory;
@@ -27,16 +28,16 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         private const float FoodSpawnInterval = 0.01f;
         private float timeSinceLastFoodSpawn = 0f;
 
-        private float abilityCooldownTime = 5f;
-        private float timeSinceLastAbilityUse = 0f;
-
-        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, IAbility ability)
+        public GameController(Entity player, FloatRect mapBorder, RenderWindow window)
         {
             this.player = player;
             gameObjectManager = new GameObjectManager();
             interactionHandler = new InteractionHandler(20f);
 
-            playerController = new PlayerController(ability);
+            abilitySystem = new AbilitySystem();
+            abilitySystem.AddAbility(new SwapAbility(5f));
+
+            playerController = new PlayerController(new PlayerInputHandler(), abilitySystem);
 
             foodFactory = new FoodFactory(mapBorder, DefaultFoodConfigs());
             EnemyFactory enemyFactory = new EnemyFactory(mapBorder);
@@ -53,14 +54,9 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
             playerUI.AddAbility("Game\\Textures\\AbilityButton\\SwapButton.png", () =>
             {
-                if (timeSinceLastAbilityUse >= abilityCooldownTime)
-                {
-                    playerController.PerformAbility(player, gameObjectManager.GetAllObjects());
-                    timeSinceLastAbilityUse = 0f;
-                }
+                abilitySystem.ActivateAbility(player, gameObjectManager.GetAllObjects(), 0);
             });
         }
-
 
         public void Update(RenderWindow window)
         {
@@ -72,7 +68,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
             cameraController.Update();
 
-            timeSinceLastAbilityUse += deltaTime;
+            abilitySystem.Update(deltaTime);
 
             timeSinceLastFoodSpawn += deltaTime;
             if (timeSinceLastFoodSpawn >= FoodSpawnInterval)

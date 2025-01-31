@@ -1,14 +1,15 @@
-﻿using Agar.io_sfml.Engine.Interfaces;
-using Agar.io_sfml.Game.Scripts.GameObjects;
+﻿using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Utils;
 using SFML.System;
 using Agar.io_sfml.Engine.Core;
 
 namespace Agar.io_sfml.Game.Scripts.Abilities
 {
-    public class SwapAbility : IAbility
+    public class SwapAbility : Ability
     {
-        public void Execute(Entity player, List<GameObject> gameObjects)
+        public SwapAbility(float cooldown) : base(cooldown) { }
+
+        public override void Execute(Entity player, List<GameObject> gameObjects)
         {
             Entity nearestEnemy = null;
             float shortestDistance = float.MaxValue;
@@ -31,14 +32,6 @@ namespace Agar.io_sfml.Game.Scripts.Abilities
                 Vector2f temp = player.Position;
                 player.Position = nearestEnemy.Position;
                 nearestEnemy.Position = temp;
-            }
-        }
-
-        public void Execute(GameObject gameObject, List<GameObject> gameObjects)
-        {
-            if (gameObject is Entity player)
-            {
-                Execute(player, gameObjects);
             }
         }
     }

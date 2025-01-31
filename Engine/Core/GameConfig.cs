@@ -16,10 +16,12 @@ namespace Agar.io_sfml.Game
         {
             FloatRect mapBorder = new FloatRect(0, 0, 4000, 4000);
             RenderWindow window = new RenderWindow(new VideoMode(1200, 800), "Agar.io");
-            IAbility ability = new SwapAbility();
-            Controller playerController = new PlayerController(ability);
+            AbilitySystem abilitySystem = new AbilitySystem();
+            abilitySystem.AddAbility(new SwapAbility(5f));
+            IInputHandler playerInput = new PlayerInputHandler();
+            PlayerController playerController = new PlayerController(playerInput, abilitySystem);
             Entity player = new Entity(playerController, new Vector2f(400, 300), 40f, 200f, false, window);
-            GameController gameController = new GameController(player, mapBorder, window, ability);
+            GameController gameController = new GameController(player, mapBorder, window);
 
             return new GameLoop(gameController, window);
         }
