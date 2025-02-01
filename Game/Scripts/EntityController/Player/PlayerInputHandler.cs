@@ -2,7 +2,7 @@
 using SFML.System;
 using SFML.Window;
 
-namespace Agar.io_sfml.Game.Scripts.Input
+namespace Agar.io_sfml.Game.Scripts.EntityController.Player
 {
     public class PlayerInputHandler : IInputHandler
     {

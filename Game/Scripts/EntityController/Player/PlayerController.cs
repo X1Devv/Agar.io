@@ -5,7 +5,7 @@ using Agar.io_sfml.Game.Scripts.Abilities;
 using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Utils;
 
-namespace Agar.io_sfml.Game.Scripts.Input
+namespace Agar.io_sfml.Game.Scripts.EntityController.Player
 {
     public class PlayerController : Controller
     {

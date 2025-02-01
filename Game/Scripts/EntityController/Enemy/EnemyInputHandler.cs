@@ -2,7 +2,7 @@
 using Agar.io_sfml.Utils;
 using SFML.System;
 
-namespace Agar.io_sfml.Game.Scripts.Input
+namespace Agar.io_sfml.Game.Scripts.EntityController.Enemy
 {
     public class EnemyInputHandler : IInputHandler
     {

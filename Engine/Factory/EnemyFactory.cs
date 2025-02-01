@@ -1,6 +1,6 @@
 ﻿using Agar.io_sfml.Engine.Interfaces;
 using Agar.io_sfml.Game.Scripts.GameObjects;
-using Agar.io_sfml.Game.Scripts.Input;
+using Agar.io_sfml.Game.Scripts.EntityController.Enemy;
 using SFML.Graphics;
 using SFML.System;
 

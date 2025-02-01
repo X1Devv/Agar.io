@@ -19,7 +19,7 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
 
         public float Radius { get; private set; }
 
-        public Entity(Controller controller, Vector2f position, float radius, float speed, bool isEnemy, RenderWindow window = null)
+        public Entity(Controller controller, Vector2f position, float radius, float speed, bool isEnemy, RenderWindow window = null, ConfigLoader config = null)
         {
             this.controller = controller;
             this.speed = speed;
@@ -43,8 +43,7 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
                 {
                     shape.Texture = playerTexture;
                 }
-
-                cameraController = new CameraController(window, this, new FloatRect(0, 0, 4000, 4000));
+                cameraController = new CameraController(window, this, new FloatRect(0, 0, 4000, 4000), config);
             }
         }
 

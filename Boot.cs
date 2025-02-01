@@ -1,10 +1,11 @@
-﻿using Agar.io_sfml.Game;
+﻿using Agar.io_sfml.Game.Scripts.Config;
+
 public class Boot
 {
     public static void Main()
     {
-        GameConfig config = new GameConfig();
-        GameLoop gameLoop = config.CreateGameLoop();
+        var gameConfig = new GameConfig();
+        var gameLoop = gameConfig.CreateGameLoop();
         gameLoop.Run();
     }
 }

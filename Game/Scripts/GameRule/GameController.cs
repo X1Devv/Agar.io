@@ -1,15 +1,15 @@
-﻿using Agar.io_sfml.Game.Scripts.GameObjects;
-using SFML.Graphics;
-using SFML.System;
-using Agar.io_sfml.Engine.Managers;
+﻿using Agar.io_sfml.Engine.Camera;
 using Agar.io_sfml.Engine.Factory;
+using Agar.io_sfml.Engine.Managers;
 using Agar.io_sfml.Engine.Utils;
-using Agar.io_sfml.Engine.Camera;
-using Agar.io_sfml.Game.Scripts.Input;
 using Agar.io_sfml.Game.Scripts.Abilities;
 using Agar.io_sfml.Game.Scripts.Config;
+using Agar.io_sfml.Game.Scripts.EntityController.Player;
+using Agar.io_sfml.Game.Scripts.GameObjects;
+using SFML.Graphics;
+using SFML.System;
 
-namespace Agar.io_sfml.Game.Scripts.GameRule
+namespace Agar.io_sfml.Game.Scripts.GameRule//Soon I will refactor the code and split the class
 {
     public class GameController
     {
@@ -25,11 +25,13 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         private CameraController cameraController;
 
         private Clock clock = new();
-        private const float FoodSpawnInterval = 0.01f;
         private float timeSinceLastFoodSpawn = 0f;
+        private float FoodSpawnInterval;
 
-        public GameController(Entity player, FloatRect mapBorder, RenderWindow window)
+        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, ConfigLoader configLoader)
         {
+            FoodSpawnInterval = configLoader.FoodSpawnInterval;
+
             this.player = player;
             gameObjectManager = new GameObjectManager();
             interactionHandler = new InteractionHandler(20f);
@@ -42,12 +44,11 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             foodFactory = new FoodFactory(mapBorder, DefaultFoodConfigs());
             EnemyFactory enemyFactory = new EnemyFactory(mapBorder);
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < configLoader.EnemyCount; i++)
                 gameObjectManager.SpawnEnemy(enemyFactory.CreateEnemy());
 
             gameObjectManager.SpawnFood(foodFactory.CreateFood());
-
-            cameraController = new CameraController(window, player, mapBorder);
+            cameraController = new CameraController(window, player, mapBorder, configLoader);
 
             TextureManager textureManager = new TextureManager();
             playerUI = new PlayerUI(window, textureManager, cameraController);
@@ -94,14 +95,14 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             playerUI.Render();
         }
 
-        private List<FoodConfig> DefaultFoodConfigs()
+        private List<FoodConfig> DefaultFoodConfigs()//will be in config.ini soon
         {
             return new List<FoodConfig>
             {
                 new FoodConfig(70, 10, Color.Magenta, 10),
                 new FoodConfig(20, 15, new Color(204, 95, 45), 15),
                 new FoodConfig(10, 15, Color.Green, 35),
-                new FoodConfig(3, 50, Color.Black, -30)
+                new FoodConfig(3, 50, Color.Black, -50)
             };
         }
     }
