@@ -1,6 +1,6 @@
 ﻿using Agar.io_sfml.Engine.Interfaces;
-using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Game.Scripts.EntityController.Enemy;
+using Agar.io_sfml.Game.Scripts.GameObjects;
 using SFML.Graphics;
 using SFML.System;
 
@@ -8,22 +8,30 @@ namespace Agar.io_sfml.Engine.Factory
 {
     public class EnemyFactory
     {
-        private FloatRect mapBorder;
-        private Random random = new();
+        private FloatRect _mapBorder;
+        private float _minSize;
+        private float _maxSize;
+        private float _baseSpeed;
+        private Random _random = new();
 
-        public EnemyFactory(FloatRect mapBorder)
+        public EnemyFactory(FloatRect mapBorder, float minSize, float maxSize, float baseSpeed)
         {
-            this.mapBorder = mapBorder;
+            _mapBorder = mapBorder;
+            _minSize = minSize;
+            _maxSize = maxSize;
+            _baseSpeed = baseSpeed;
         }
 
         public Entity CreateEnemy()
         {
-            float x = (float)(random.NextDouble() * mapBorder.Width + mapBorder.Left);
-            float y = (float)(random.NextDouble() * mapBorder.Height + mapBorder.Top);
-            float size = (float)(random.NextDouble() * 20 + 10);
+            float x = (float)(_random.NextDouble() * _mapBorder.Width + _mapBorder.Left);
+            float y = (float)(_random.NextDouble() * _mapBorder.Height + _mapBorder.Top);
+            float size = (float)(_random.NextDouble() * (_maxSize - _minSize) + _minSize);
 
             IInputHandler enemyInput = new EnemyInputHandler();
-            return new Entity(new EnemyController(enemyInput), new Vector2f(x, y), size, 200f, true);
+            EnemyController enemyController = new EnemyController(enemyInput, _baseSpeed);
+
+            return new Entity(enemyController, new Vector2f(x, y), size, 200f, true);
         }
     }
 }

@@ -1,5 +1,8 @@
-﻿using System.Globalization;
-
+﻿using IniParser;
+using IniParser.Model;
+using SFML.Graphics;
+using Agar.io_sfml.Game.Scripts.Config;
+using SFML.System;
 
 namespace Agar.io_sfml.Engine.Utils
 {
@@ -7,35 +10,85 @@ namespace Agar.io_sfml.Engine.Utils
     {
         public int EnemyCount { get; private set; }
         public float FoodSpawnInterval { get; private set; }
-        public float CameraHeight { get; private set; }
-
-        private string projectRoot;
+        public float MinPlayerRadius { get; private set; }
+        public float SwapAbilityCooldown { get; private set; }
+        public string SwapAbilityButtonPath { get; private set; }
+        public float EnemyMinSize { get; private set; }
+        public float EnemyMaxSize { get; private set; }
+        public float EnemyBaseSpeed { get; private set; }
+        public List<FoodConfig> FoodConfigs { get; private set; }
+        public float StartZoom { get; private set; }
+        public float CameraMinZoom { get; private set; }
+        public float CameraMaxZoom { get; private set; }
+        public float CameraSmoothness { get; private set; }
+        public FloatRect MapBounds { get; private set; }
+        public Vector2f PlayerStartPosition { get; private set; }
+        public float PlayerStartSpeed { get; private set; }
+        public float PlayerStartSize { get; private set; }
 
         public ConfigLoader()
         {
-            projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
-            string configPath = Path.Combine(projectRoot, "Game", "Scripts", "Config", "config.ini");
-
-            LoadConfig(configPath);
+            string configPath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "..", "..", "..", "Resources", "Config", "config.ini"
+            );
+            var parser = new FileIniDataParser();
+            var iniData = parser.ReadFile(configPath);
+            LoadFromIni(iniData);
         }
 
-        private void LoadConfig(string filePath)
+        private void LoadFromIni(IniData iniData)
         {
-            var lines = File.ReadAllLines(filePath);
-            var configValues = new Dictionary<string, string>();
+            EnemyCount = int.Parse(iniData["Gameplay"]["EnemyCount"]);
+            FoodSpawnInterval = float.Parse(iniData["Gameplay"]["FoodSpawnInterval"]);
+            MinPlayerRadius = float.Parse(iniData["Gameplay"]["MinPlayerRadius"]);
+            SwapAbilityCooldown = float.Parse(iniData["Gameplay"]["SwapAbilityCooldown"]);
+            PlayerStartSpeed = float.Parse(iniData["Gameplay"]["PlayerStartSpeed"]);
+            PlayerStartPosition = new Vector2f(
+                float.Parse(iniData["Gameplay"]["PlayerStartX"]),
+                float.Parse(iniData["Gameplay"]["PlayerStartY"])
+            );
+            PlayerStartSize = float.Parse(iniData["Gameplay"]["PlayerStartSize"]);
 
-            foreach (var line in lines)
+            EnemyMinSize = float.Parse(iniData["Enemies"]["MinSize"]);
+            EnemyMaxSize = float.Parse(iniData["Enemies"]["MaxSize"]);
+            EnemyBaseSpeed = float.Parse(iniData["Enemies"]["BaseSpeed"]);
+
+            StartZoom = float.Parse(iniData["Camera"]["StartZoom"]);
+            CameraMinZoom = float.Parse(iniData["Camera"]["MinZoom"]);
+            CameraMaxZoom = float.Parse(iniData["Camera"]["MaxZoom"]);
+            CameraSmoothness = float.Parse(iniData["Camera"]["Smoothness"]);
+
+            MapBounds = new FloatRect(
+                float.Parse(iniData["Map"]["Left"]),
+                float.Parse(iniData["Map"]["Top"]),
+                float.Parse(iniData["Map"]["Width"]),
+                float.Parse(iniData["Map"]["Height"])
+            );
+
+            int foodTypesCount = int.Parse(iniData["Food"]["FoodTypesCount"]);
+            FoodConfigs = new List<FoodConfig>();
+            for (int i = 0; i < foodTypesCount; i++)
             {
-                var parts = line.Split('=');
-                if (parts.Length == 2)
-                {
-                    configValues[parts[0].Trim()] = parts[1].Trim();
-                }
+                string section = $"FoodType{i + 1}";
+                FoodConfigs.Add(new FoodConfig(
+                    int.Parse(iniData[section]["Probability"]),
+                    float.Parse(iniData[section]["Size"]),
+                    ParseColor(iniData[section]["Color"]),
+                    int.Parse(iniData[section]["GrowthBonus"])
+                ));
             }
+            SwapAbilityButtonPath = iniData["UI"]["SwapAbilityButtonPath"];
+        }
 
-            EnemyCount = int.Parse(configValues["EnemyCount"]);
-            FoodSpawnInterval = float.Parse(configValues["FoodSpawnInterval"], CultureInfo.InvariantCulture);
-            CameraHeight = float.Parse(configValues["CameraHeight"], CultureInfo.InvariantCulture);
+        private Color ParseColor(string colorStr)
+        {
+            string[] parts = colorStr.Split(',');
+            return new Color(
+                byte.Parse(parts[0]),
+                byte.Parse(parts[1]),
+                byte.Parse(parts[2])
+            );
         }
     }
 }

@@ -3,57 +3,57 @@ using Agar.io_sfml.Engine.Factory;
 using Agar.io_sfml.Engine.Managers;
 using Agar.io_sfml.Engine.Utils;
 using Agar.io_sfml.Game.Scripts.Abilities;
-using Agar.io_sfml.Game.Scripts.Config;
-using Agar.io_sfml.Game.Scripts.EntityController.Player;
 using Agar.io_sfml.Game.Scripts.GameObjects;
+using Agar.io_sfml.Game.Scripts.UI;
 using SFML.Graphics;
 using SFML.System;
 
-namespace Agar.io_sfml.Game.Scripts.GameRule//Soon I will refactor the code and split the class
+namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class GameController
     {
         private Entity player;
-        private GameObjectManager gameObjectManager;
+        private GameObjectManager gameObjectManager = new();
+
         private AbilitySystem abilitySystem;
 
-        private PlayerController playerController;
         private FoodFactory foodFactory;
+        private EnemyFactory enemyFactory;
 
         private InteractionHandler interactionHandler;
+
         private PlayerUI playerUI;
         private CameraController cameraController;
 
         private Clock clock = new();
-        private float timeSinceLastFoodSpawn = 0f;
-        private float FoodSpawnInterval;
 
-        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, ConfigLoader configLoader)
+        private float timeSinceLastFoodSpawn;
+        private float foodSpawnInterval;
+
+        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, ConfigLoader config)
         {
-            FoodSpawnInterval = configLoader.FoodSpawnInterval;
-
             this.player = player;
-            gameObjectManager = new GameObjectManager();
-            interactionHandler = new InteractionHandler(20f);
+            foodSpawnInterval = config.FoodSpawnInterval;
+            foodFactory = new FoodFactory(mapBorder, config.FoodConfigs);
 
-            abilitySystem = new AbilitySystem();
-            abilitySystem.AddAbility(new SwapAbility(5f));
+            enemyFactory = new EnemyFactory(
+                mapBorder,
+                config.EnemyMinSize,
+                config.EnemyMaxSize,
+                config.EnemyBaseSpeed
+            );
 
-            playerController = new PlayerController(new PlayerInputHandler(), abilitySystem);
-
-            foodFactory = new FoodFactory(mapBorder, DefaultFoodConfigs());
-            EnemyFactory enemyFactory = new EnemyFactory(mapBorder);
-
-            for (int i = 0; i < configLoader.EnemyCount; i++)
+            for (int i = 0; i < config.EnemyCount; i++)
                 gameObjectManager.SpawnEnemy(enemyFactory.CreateEnemy());
 
-            gameObjectManager.SpawnFood(foodFactory.CreateFood());
-            cameraController = new CameraController(window, player, mapBorder, configLoader);
+            abilitySystem = new AbilitySystem();
+            abilitySystem.AddAbility(new SwapAbility(config.SwapAbilityCooldown));
+            interactionHandler = new InteractionHandler(config.MinPlayerRadius);
 
-            TextureManager textureManager = new TextureManager();
-            playerUI = new PlayerUI(window, textureManager, cameraController);
+            cameraController = new CameraController(window, player, mapBorder, config);
 
-            playerUI.AddAbility("Game\\Textures\\AbilityButton\\SwapButton.png", () =>
+            playerUI = new PlayerUI(window, new TextureManager(), cameraController);
+            playerUI.AddAbility(config.SwapAbilityButtonPath, () =>
             {
                 abilitySystem.ActivateAbility(player, gameObjectManager.GetAllObjects(), 0);
             });
@@ -61,29 +61,21 @@ namespace Agar.io_sfml.Game.Scripts.GameRule//Soon I will refactor the code and 
 
         public void Update(RenderWindow window)
         {
-            if (foodFactory == null)
-                return;
-
             float deltaTime = clock.Restart().AsSeconds();
+
             player.Update(deltaTime);
-
-            cameraController.Update();
-
-            abilitySystem.Update(deltaTime);
+            cameraController.Update(deltaTime);
 
             timeSinceLastFoodSpawn += deltaTime;
-            if (timeSinceLastFoodSpawn >= FoodSpawnInterval)
+            if (timeSinceLastFoodSpawn >= foodSpawnInterval)
             {
                 timeSinceLastFoodSpawn = 0f;
-
-                var food = foodFactory.CreateFood();
-                gameObjectManager.SpawnFood(food);
+                gameObjectManager.SpawnFood(foodFactory.CreateFood());
             }
 
             interactionHandler.HandleInteractions(player, gameObjectManager.GetAllObjects(), deltaTime);
-
             gameObjectManager.UpdateObjects(deltaTime);
-
+            abilitySystem.Update(deltaTime);
             playerUI.Update();
         }
 
@@ -93,17 +85,6 @@ namespace Agar.io_sfml.Game.Scripts.GameRule//Soon I will refactor the code and 
             player.Render(window);
             gameObjectManager.RenderObjects(window);
             playerUI.Render();
-        }
-
-        private List<FoodConfig> DefaultFoodConfigs()//will be in config.ini soon
-        {
-            return new List<FoodConfig>
-            {
-                new FoodConfig(70, 10, Color.Magenta, 10),
-                new FoodConfig(20, 15, new Color(204, 95, 45), 15),
-                new FoodConfig(10, 15, Color.Green, 35),
-                new FoodConfig(3, 50, Color.Black, -50)
-            };
         }
     }
 }

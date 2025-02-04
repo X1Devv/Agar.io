@@ -2,53 +2,74 @@
 using Agar.io_sfml.Game.Scripts.GameObjects;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace Agar.io_sfml.Engine.Camera
 {
     public class CameraController
     {
-        private View cameraView;
-        private RenderWindow window;
-        private Entity player;
-        private FloatRect mapBorder;
-        private float cameraHeight;
+        private View _cameraView;
+        private RenderWindow _window;
+
+        private Entity _player;
+        private FloatRect _mapBorder;
+
+        private float _cameraSmoothness;
+
+        public float StartZoom { get; private set; }
+        public float MinZoom { get; }
+        public float MaxZoom { get; }
 
         public CameraController(RenderWindow window, Entity player, FloatRect mapBorder, ConfigLoader config)
         {
-            this.window = window;
-            this.player = player;
-            this.mapBorder = mapBorder;
+            _window = window;
+            _player = player;
+            _mapBorder = mapBorder;
+            _cameraSmoothness = config.CameraSmoothness;
+            MinZoom = config.CameraMinZoom;
+            MaxZoom = config.CameraMaxZoom;
+            StartZoom = config.StartZoom;
 
-            cameraHeight = config.CameraHeight;
+            _cameraView = new View(_window.GetView());
+            UpdateViewSize();
 
-            cameraView = new View(window.GetView());
-            cameraView.Size = new Vector2f(window.Size.X, cameraHeight);
+            _window.MouseWheelScrolled += OnMouseWheelScrolled;
         }
 
-        public void Update()
+        private void OnMouseWheelScrolled(object sender, MouseWheelScrollEventArgs e)
         {
-            cameraView.Center = new Vector2f(player.Position.X, player.Position.Y);
-
-            float cameraHalfWidth = cameraView.Size.X / 2;
-            float cameraHalfHeight = cameraView.Size.Y / 2;
-
-            float PosX = Math.Max(mapBorder.Left + cameraHalfWidth, Math.Min(cameraView.Center.X, mapBorder.Left + mapBorder.Width - cameraHalfWidth));
-            float PosY = Math.Max(mapBorder.Top + cameraHalfHeight, Math.Min(cameraView.Center.Y, mapBorder.Top + mapBorder.Height - cameraHalfHeight));
-
-            cameraView.Center = new Vector2f(PosX, PosY);
-
-            cameraView.Size = new Vector2f(window.Size.X, cameraHeight);
+            if (e.Delta > 0) AdjustZoom(-50);
+            else AdjustZoom(50);
         }
 
-        public void Apply()
+        public void AdjustZoom(float delta)
         {
-            if (cameraView != null)
-                window.SetView(cameraView);
+            StartZoom = Math.Clamp(StartZoom + delta, MinZoom, MaxZoom);
+            UpdateViewSize();
         }
 
-        public View GetView()
+        public View GetView() => _cameraView;
+
+        public void Update(float deltaTime)
         {
-            return cameraView;
+            Vector2f targetPosition = _player.Position;
+            Vector2f currentCenter = _cameraView.Center;
+            Vector2f newCenter = currentCenter + (targetPosition - currentCenter) * _cameraSmoothness * deltaTime;
+
+            float halfWidth = _cameraView.Size.X / 2;
+            float halfHeight = _cameraView.Size.Y / 2;
+            newCenter.X = Math.Clamp(newCenter.X, _mapBorder.Left + halfWidth, _mapBorder.Left + _mapBorder.Width - halfWidth);
+            newCenter.Y = Math.Clamp(newCenter.Y, _mapBorder.Top + halfHeight, _mapBorder.Top + _mapBorder.Height - halfHeight);
+
+            _cameraView.Center = newCenter;
+        }
+
+        public void Apply() => _window.SetView(_cameraView);
+
+        private void UpdateViewSize()
+        {
+            float aspectRatio = (float)_window.Size.X / _window.Size.Y;
+            _cameraView.Size = new Vector2f(StartZoom * aspectRatio, StartZoom);
         }
     }
 }

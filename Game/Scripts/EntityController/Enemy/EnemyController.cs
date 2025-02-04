@@ -1,22 +1,29 @@
 ﻿using Agar.io_sfml.Engine.Core;
 using Agar.io_sfml.Engine.Interfaces;
-using Agar.io_sfml.Utils;
 using SFML.System;
 
 namespace Agar.io_sfml.Game.Scripts.EntityController.Enemy
 {
     public class EnemyController : Controller
     {
-        private IInputHandler inputHandler;
+        private readonly IInputHandler _inputHandler;
+        private readonly float _baseSpeed;
 
-        public EnemyController(IInputHandler inputHandler)
+        public EnemyController(IInputHandler inputHandler, float baseSpeed)
         {
-            this.inputHandler = inputHandler;
+            _inputHandler = inputHandler;
+            _baseSpeed = baseSpeed;
         }
 
-        public override Vector2f GetDirection(Vector2f currentPosition, float currentRadius, List<GameObject> gameObjects, float deltaTime)
+        public override Vector2f GetDirection(
+            Vector2f currentPosition,
+            float radius,
+            List<GameObject> objects,
+            float deltaTime
+        )
         {
-            return MathUtils.Normalize(inputHandler.GetInputDirection());
+            Vector2f direction = _inputHandler.GetInputDirection();
+            return direction * _baseSpeed;
         }
     }
 }

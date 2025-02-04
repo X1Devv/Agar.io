@@ -9,6 +9,7 @@ namespace Agar.io_sfml.Engine.Factory
     {
         private FloatRect mapBorder;
         private Random random = new Random();
+
         private List<FoodConfig> foodConfigs;
 
         public FoodFactory(FloatRect mapBorder, List<FoodConfig> configs)

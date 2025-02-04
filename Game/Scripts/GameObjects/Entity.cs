@@ -9,12 +9,15 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
     public class Entity : GameObject
     {
         private Controller controller;
+
         private TextureManager textureManager;
         private Texture playerTexture;
+
         private CameraController cameraController;
 
         public bool IsEnemy { get; private set; }
         private float speed;
+
         private CircleShape shape;
 
         public float Radius { get; private set; }
@@ -37,7 +40,7 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
             if (!isEnemy && window != null)
             {
                 textureManager = new TextureManager();
-                playerTexture = textureManager.LoadTexture("Game\\Textures\\Skin\\PlayerSkin.png");
+                playerTexture = textureManager.LoadTexture("Resources\\Textures\\Skin\\PlayerSkin.png");
 
                 if (playerTexture != null)
                 {
@@ -54,7 +57,7 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
 
             if (!IsEnemy)
             {
-                cameraController.Update();
+                cameraController.Update(deltaTime);
                 cameraController.Apply();
             }
 
