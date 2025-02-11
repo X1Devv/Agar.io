@@ -7,10 +7,12 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     public class InteractionHandler
     {
         private float MinPlayerSize;
+        private StreakSystem streakSystem;
 
-        public InteractionHandler(float minPlayerSize)
+        public InteractionHandler(float minPlayerSize, StreakSystem streakSystem)
         {
             MinPlayerSize = minPlayerSize;
+            this.streakSystem = streakSystem;
         }
 
         public void HandleInteractions(Entity player, List<GameObject> gameObjects, float deltaTime)
@@ -69,6 +71,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     if (enemy.GetRadius() <= MinPlayerSize)
                     {
                         gameObjects.RemoveAt(index);
+                        streakSystem.OnKill(player, enemy);
                     }
                 }
                 else if (enemyRadius > playerRadius)
@@ -83,6 +86,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                 }
             }
         }
+
         private float ReductionOfGrowthBeyondTheRadius(float currentRadius, float initialGrowth)
         {
             return initialGrowth / (1 + currentRadius * 0.05f);

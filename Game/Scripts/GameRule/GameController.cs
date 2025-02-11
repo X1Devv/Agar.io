@@ -3,6 +3,7 @@ using Agar.io_sfml.Engine.Factory;
 using Agar.io_sfml.Engine.Managers;
 using Agar.io_sfml.Engine.Utils;
 using Agar.io_sfml.Game.Scripts.Abilities;
+using Agar.io_sfml.Game.Scripts.Audio;
 using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Game.Scripts.UI;
 using SFML.Graphics;
@@ -14,21 +15,17 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     {
         private Entity player;
         private GameObjectManager gameObjectManager = new();
-
         private AbilitySystem abilitySystem;
-
         private FoodFactory foodFactory;
         private EnemyFactory enemyFactory;
-
         private InteractionHandler interactionHandler;
-
         private PlayerUI playerUI;
         private CameraController cameraController;
-
         private Clock clock = new();
-
         private float timeSinceLastFoodSpawn;
         private float foodSpawnInterval;
+        private AudioSystem audioSystem;
+        private StreakSystem streakSystem;
 
         public GameController(Entity player, FloatRect mapBorder, RenderWindow window, ConfigLoader config)
         {
@@ -48,7 +45,20 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
             abilitySystem = new AbilitySystem();
             abilitySystem.AddAbility(new SwapAbility(config.SwapAbilityCooldown));
-            interactionHandler = new InteractionHandler(config.MinPlayerRadius);
+
+            audioSystem = new AudioSystem();
+            audioSystem.LoadBackgroundMusic(config.BackgroundMusicPath);
+            audioSystem.LoadStreakSound("Kill", config.KillSoundPath);
+            audioSystem.LoadStreakSound("FirstBlood", config.FirstBloodSoundPath);
+            audioSystem.LoadStreakSound("DoubleKill", config.DoubleKillSoundPath);
+            audioSystem.LoadStreakSound("TripleKill", config.TripleKillSoundPath);
+            audioSystem.LoadStreakSound("UltraKill", config.UltraKillSoundPath);
+            audioSystem.LoadStreakSound("Rampage", config.RampageSoundPath);
+            audioSystem.LoadStreakSound("HolyShit", config.HolyShitSoundPath);
+            audioSystem.PlayBackgroundMusic();
+
+            streakSystem = new StreakSystem(audioSystem, window, config, cameraController);
+            interactionHandler = new InteractionHandler(config.MinPlayerRadius, streakSystem);
 
             cameraController = new CameraController(window, player, mapBorder, config);
 
@@ -57,6 +67,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             {
                 abilitySystem.ActivateAbility(player, gameObjectManager.GetAllObjects(), 0);
             });
+            streakSystem = new StreakSystem(audioSystem, window, config, cameraController);
         }
 
         public void Update(RenderWindow window)
@@ -77,6 +88,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             gameObjectManager.UpdateObjects(deltaTime);
             abilitySystem.Update(deltaTime);
             playerUI.Update();
+            streakSystem.Update();
         }
 
         public void Render(RenderWindow window)
