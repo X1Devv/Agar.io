@@ -20,8 +20,9 @@
         public static float MapLeft = 0;
         public static float MapTop = 0;
         public static float MapWidth = 4000;
-        public static float MapHeight = 4000; 
+        public static float MapHeight = 4000;
         public static string SwapAbilityButtonPath = "Resources/Textures/AbilityButton/SwapButton.png";
+        public static string PauseButtonPath = "Resources\\Textures\\AbilityButton\\PauseButton.png";
         public static string BackgroundMusicPath = "Resources/Audio/music.wav";
         public static string KillSoundPath = "Resources/Audio/StreakAlert/Kill.wav";
         public static string FirstBloodSoundPath = "Resources/Audio/StreakAlert/FirstBlood.wav";
@@ -31,7 +32,5 @@
         public static string RampageSoundPath = "Resources/Audio/StreakAlert/Rampage.wav";
         public static string HolyShitSoundPath = "Resources/Audio/StreakAlert/HolyShit.wav";
         public static string FontPath = "Resources/Fonts/arial.ttf";
-
-
     }
 }

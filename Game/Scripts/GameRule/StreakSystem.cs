@@ -70,13 +70,10 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
         public void Update()
         {
+            if (cameraController == null) return;
 
             Vector2f cameraCenter = cameraController.GetView().Center;
             Vector2f cameraSize = cameraController.GetView().Size;
-            //streakText.Position = new Vector2f(
-            //    cameraCenter.X - cameraSize.X / 2 + 20,
-            //   cameraCenter.Y - cameraSize.Y / 2 + 20
-            //);
         }
     }
 }

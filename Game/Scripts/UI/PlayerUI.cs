@@ -9,10 +9,10 @@ namespace Agar.io_sfml.Game.Scripts.UI
     public class PlayerUI
     {
         private List<(Sprite button, Action onClick)> abilityButtons = new();
-
+        private Sprite pauseButton;
+        private Action onPauseClick;
         private TextureManager textureManager;
         private RenderWindow window;
-
         private CameraController cameraController;
 
         public PlayerUI(RenderWindow window, TextureManager textureManager, CameraController cameraController)
@@ -34,6 +34,14 @@ namespace Agar.io_sfml.Game.Scripts.UI
             UpdateButtonPositions();
         }
 
+        public void AddPauseButton(string texturePath, Action onClick)
+        {
+            Texture pauseTexture = textureManager.LoadTexture(texturePath);
+            pauseButton = new Sprite(pauseTexture) { Scale = new Vector2f(0.1f, 0.1f) };
+            onPauseClick = onClick;
+            UpdatePauseButtonPosition();
+        }
+
         public void Update()
         {
             Vector2i mousePosition = Mouse.GetPosition(window);
@@ -41,6 +49,12 @@ namespace Agar.io_sfml.Game.Scripts.UI
 
             if (Mouse.IsButtonPressed(Mouse.Button.Left))
             {
+                if (pauseButton.GetGlobalBounds().Contains(worldMousePosition.X, worldMousePosition.Y))
+                {
+                    onPauseClick?.Invoke();
+                    return;
+                }
+
                 foreach (var (button, onClick) in abilityButtons)
                 {
                     if (button.GetGlobalBounds().Contains(worldMousePosition.X, worldMousePosition.Y))
@@ -52,7 +66,9 @@ namespace Agar.io_sfml.Game.Scripts.UI
             }
 
             UpdateButtonPositions();
+            UpdatePauseButtonPosition();
         }
+
 
         public void Render()
         {
@@ -60,6 +76,8 @@ namespace Agar.io_sfml.Game.Scripts.UI
             {
                 window.Draw(button);
             }
+
+            window.Draw(pauseButton);
         }
 
         private void UpdateButtonPositions()
@@ -73,6 +91,17 @@ namespace Agar.io_sfml.Game.Scripts.UI
                 Vector2f buttonPosition = new Vector2f(cameraPosition.X + offsetX, cameraPosition.Y + offsetY);
                 abilityButtons[i].button.Position = buttonPosition;
             }
+        }
+
+        private void UpdatePauseButtonPosition()
+        {
+            Vector2f cameraPosition = cameraController.GetView().Center;
+            float offsetX = window.Size.X / 2 - 50;
+            float offsetY = -window.Size.Y / 2 + 50;
+            pauseButton.Position = new Vector2f(
+                cameraPosition.X + offsetX,
+                cameraPosition.Y + offsetY
+            );
         }
     }
 }

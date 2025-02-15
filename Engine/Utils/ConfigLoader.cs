@@ -3,6 +3,7 @@ using IniParser;
 using IniParser.Model;
 using SFML.Graphics;
 using SFML.System;
+
 namespace Agar.io_sfml.Engine.Utils
 {
     public class ConfigLoader
@@ -12,6 +13,7 @@ namespace Agar.io_sfml.Engine.Utils
         public float MinPlayerRadius { get; private set; }
         public float SwapAbilityCooldown { get; private set; }
         public string SwapAbilityButtonPath { get; private set; }
+        public string PauseButtonPath { get; private set; }
         public float EnemyMinSize { get; private set; }
         public float EnemyMaxSize { get; private set; }
         public float EnemyBaseSpeed { get; private set; }
@@ -34,21 +36,12 @@ namespace Agar.io_sfml.Engine.Utils
         public string HolyShitSoundPath { get; private set; }
         public string FontPath { get; private set; }
 
-
         private string projectRoot;
 
         public ConfigLoader()
         {
-            projectRoot = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "..", "..", ".."
-            );
-
-            string configPath = Path.Combine(
-                projectRoot,
-                "Resources", "Config", "config.ini"
-            );
-
+            projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
+            string configPath = Path.Combine(projectRoot, "Resources", "Config", "config.ini");
             var parser = new FileIniDataParser();
             IniData iniData = parser.ReadFile(configPath);
             LoadFromIni(iniData);
@@ -83,12 +76,8 @@ namespace Agar.io_sfml.Engine.Utils
             UltraKillSoundPath = GetFullPath(GetValue(iniData, "Audio", "UltraKillSound", DefaultConfig.UltraKillSoundPath));
             RampageSoundPath = GetFullPath(GetValue(iniData, "Audio", "RampageSound", DefaultConfig.RampageSoundPath));
             HolyShitSoundPath = GetFullPath(GetValue(iniData, "Audio", "HolyShitSound", DefaultConfig.HolyShitSoundPath));
-            
-            
-            
+
             FontPath = GetFullPath(GetValue(iniData, "UI", "FontPath", DefaultConfig.FontPath));
-
-
 
             MapBounds = new FloatRect(
                 GetValue(iniData, "Map", "Left", DefaultConfig.MapLeft),
@@ -109,7 +98,9 @@ namespace Agar.io_sfml.Engine.Utils
                     GetValue(iniData, section, "GrowthBonus", 0)
                 ));
             }
+
             SwapAbilityButtonPath = GetValue(iniData, "UI", "SwapAbilityButtonPath", DefaultConfig.SwapAbilityButtonPath);
+            PauseButtonPath = GetValue(iniData, "UI", "PauseButtonPath", DefaultConfig.PauseButtonPath);
         }
 
         private string GetFullPath(string relativePath)

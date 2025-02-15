@@ -8,15 +8,20 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     {
         private float MinPlayerSize;
         private StreakSystem streakSystem;
+        private GameController gameController;
 
-        public InteractionHandler(float minPlayerSize, StreakSystem streakSystem)
+        public InteractionHandler(float minPlayerSize, StreakSystem streakSystem, GameController gameController)
         {
-            MinPlayerSize = minPlayerSize;
+            this.MinPlayerSize = minPlayerSize;
+            this.streakSystem = streakSystem;
+            this.gameController = gameController;
             this.streakSystem = streakSystem;
         }
 
         public void HandleInteractions(Entity player, List<GameObject> gameObjects, float deltaTime)
         {
+            if (gameController.IsPaused) return;
+            
             for (int i = gameObjects.Count - 1; i >= 0; i--)
             {
                 var obj = gameObjects[i];

@@ -32,6 +32,7 @@ namespace Agar.io_sfml.Engine.Managers
 
         public void UpdateObjects(float deltaTime)
         {
+
             foreach (var obj in gameObjects)
             {
                 if (obj is Entity entity && entity.IsEnemy)

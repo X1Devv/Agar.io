@@ -8,6 +8,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Audio\music.wav" />
+    <None Remove="Resources\Audio\StreakAlert\DoubleKill.wav" />
+    <None Remove="Resources\Audio\StreakAlert\FirstBlood.wav" />
+    <None Remove="Resources\Audio\StreakAlert\HolyShit.wav" />
+    <None Remove="Resources\Audio\StreakAlert\Kill.wav" />
+    <None Remove="Resources\Audio\StreakAlert\Rampage.wav" />
+    <None Remove="Resources\Audio\StreakAlert\TripleKill.wav" />
+    <None Remove="Resources\Audio\StreakAlert\UltraKill.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Audio\music.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\DoubleKill.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\FirstBlood.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\HolyShit.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\Kill.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\Rampage.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\TripleKill.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Audio\StreakAlert\UltraKill.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ini-parser" Version="2.5.2" />
     <PackageReference Include="SFML.Net" Version="2.6.0" />
   </ItemGroup>
