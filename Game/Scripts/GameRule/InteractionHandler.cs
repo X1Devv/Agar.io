@@ -6,22 +6,21 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class InteractionHandler
     {
-        private float MinPlayerSize;
-        private StreakSystem streakSystem;
-        private GameController gameController;
+        private readonly float _minPlayerSize;
+        private readonly StreakSystem _streakSystem;
+        private readonly Func<bool> _isPaused;
 
-        public InteractionHandler(float minPlayerSize, StreakSystem streakSystem, GameController gameController)
+        public InteractionHandler(float minPlayerSize, StreakSystem streakSystem, Func<bool> isPaused)
         {
-            this.MinPlayerSize = minPlayerSize;
-            this.streakSystem = streakSystem;
-            this.gameController = gameController;
-            this.streakSystem = streakSystem;
+            _minPlayerSize = minPlayerSize;
+            _streakSystem = streakSystem;
+            _isPaused = isPaused;
         }
 
         public void HandleInteractions(Entity player, List<GameObject> gameObjects, float deltaTime)
         {
-            if (gameController.IsPaused) return;
-            
+            if (_isPaused()) return;
+
             for (int i = gameObjects.Count - 1; i >= 0; i--)
             {
                 var obj = gameObjects[i];
@@ -73,10 +72,10 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     player.Grow(growthAmount);
                     enemy.SetRadius(enemyRadius - overlap);
 
-                    if (enemy.GetRadius() <= MinPlayerSize)
+                    if (enemy.GetRadius() <= _minPlayerSize)
                     {
                         gameObjects.RemoveAt(index);
-                        streakSystem.OnKill(player, enemy);
+                        _streakSystem.OnKill();
                     }
                 }
                 else if (enemyRadius > playerRadius)
@@ -84,9 +83,9 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     float shrinkAmount = ReductionOfGrowthBeyondTheRadius(enemyRadius, overlap);
                     player.SetRadius(playerRadius - shrinkAmount);
 
-                    if (player.GetRadius() <= MinPlayerSize)
+                    if (player.GetRadius() <= _minPlayerSize)
                     {
-                        player.SetRadius(MinPlayerSize);
+                        player.SetRadius(_minPlayerSize);
                     }
                 }
             }

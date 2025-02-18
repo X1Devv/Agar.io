@@ -1,4 +1,4 @@
-﻿using Agar.io_sfml.Engine.Utils;
+﻿using Agar.io_sfml.Game.Scripts.Config;
 using Agar.io_sfml.Game.Scripts.GameObjects;
 using SFML.Graphics;
 using SFML.System;
@@ -20,7 +20,7 @@ namespace Agar.io_sfml.Engine.Camera
         public float MinZoom { get; }
         public float MaxZoom { get; }
 
-        public CameraController(RenderWindow window, Entity player, FloatRect mapBorder, ConfigLoader config)
+        public CameraController(RenderWindow window, Entity player, FloatRect mapBorder, Config config)
         {
             _window = window;
             _player = player;

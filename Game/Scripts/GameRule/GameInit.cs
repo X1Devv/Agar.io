@@ -5,6 +5,7 @@ using SFML.Graphics;
 using SFML.Window;
 using Agar.io_sfml.Engine.Utils;
 using Agar.io_sfml.Game.Scripts.EntityController.Player;
+using Agar.io_sfml.Game.Scripts.Config;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
 {
@@ -12,7 +13,9 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     {
         public GameLoop CreateGameLoop()
         {
-            ConfigLoader config = new ConfigLoader();
+            var configLoader = new ConfigLoader("Resources/Config/config.ini");
+            var configData = configLoader.Load();
+            var config = ConfigInitializer.Initialize(configData);
 
             FloatRect mapBorder = config.MapBounds;
             RenderWindow window = new RenderWindow(new VideoMode(1200, 800), "Agar.io");
@@ -26,6 +29,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             Entity player = new Entity(playerController, config.PlayerStartPosition, config.PlayerStartSize, config.PlayerStartSpeed, false, window, config);
 
             GameController gameController = new GameController(player, mapBorder, window, config);
+            
             return new GameLoop(gameController, window);
         }
     }

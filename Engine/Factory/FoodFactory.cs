@@ -7,25 +7,26 @@ namespace Agar.io_sfml.Engine.Factory
 {
     public class FoodFactory
     {
-        private FloatRect mapBorder;
-        private Random random = new Random();
+        private FloatRect _mapBorder;
+        private Random _random = new();
+        private List<Config.FoodConfig> _foodConfigs;
 
-        private List<FoodConfig> foodConfigs;
+        public float SpawnInterval { get; }
 
-        public FoodFactory(FloatRect mapBorder, List<FoodConfig> configs)
+        public FoodFactory(FloatRect mapBorder, List<Config.FoodConfig> configs)
         {
-            this.mapBorder = mapBorder;
-            foodConfigs = configs;
+            _mapBorder = mapBorder;
+            _foodConfigs = configs;
+            SpawnInterval = 0.05f;
         }
-
 
         public Food CreateFood()
         {
-            int totalWeight = foodConfigs.Sum(config => config.Probability);
-            int randomValue = random.Next(0, totalWeight);
+            int totalWeight = _foodConfigs.Sum(config => config.Probability);
+            int randomValue = _random.Next(0, totalWeight);
 
-            FoodConfig selectedConfig = null;
-            foreach (var config in foodConfigs)
+            Config.FoodConfig selectedConfig = null;
+            foreach (var config in _foodConfigs)
             {
                 if (randomValue < config.Probability)
                 {
@@ -35,8 +36,8 @@ namespace Agar.io_sfml.Engine.Factory
                 randomValue -= config.Probability;
             }
 
-            float x = (float)(random.NextDouble() * mapBorder.Width + mapBorder.Left);
-            float y = (float)(random.NextDouble() * mapBorder.Height + mapBorder.Top);
+            float x = (float)(_random.NextDouble() * _mapBorder.Width + _mapBorder.Left);
+            float y = (float)(_random.NextDouble() * _mapBorder.Height + _mapBorder.Top);
 
             return new Food(new Vector2f(x, y), selectedConfig.Size, selectedConfig.Color, selectedConfig.GrowthBonus);
         }

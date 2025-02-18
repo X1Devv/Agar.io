@@ -22,7 +22,16 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
 
         public float Radius { get; private set; }
 
-        public Entity(Controller controller, Vector2f position, float radius, float speed, bool isEnemy, RenderWindow window = null, ConfigLoader config = null)
+        public Entity(
+            Controller controller,
+            Vector2f position,
+            float radius,
+            float speed,
+            bool isEnemy,
+            RenderWindow window = null,
+            Config.Config config = null
+        )
+
         {
             this.controller = controller;
             this.speed = speed;

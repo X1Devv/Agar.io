@@ -1,7 +1,4 @@
-﻿using Agar.io_sfml.Engine.Camera;
-using Agar.io_sfml.Engine.Utils;
-using Agar.io_sfml.Game.Scripts.Audio;
-using Agar.io_sfml.Game.Scripts.GameObjects;
+﻿using Agar.io_sfml.Game.Scripts.Audio;
 using SFML.Graphics;
 using SFML.System;
 
@@ -9,71 +6,70 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class StreakSystem
     {
-        private int killStreak;
-        private AudioSystem audioSystem;
-        private RenderWindow window;
-        private Clock streakClock;
-        private CameraController cameraController;
-        private bool firstBloodPlayed = false;
+        private int _killStreak;
+        private SoundManager _soundManager;
+        private RenderWindow _window;
+        private Clock _streakClock;
+        private bool _firstBloodPlayed = false;
+        private RectangleShape _bloodEffect;
+        private float _bloodEffectAlpha = 0f;
 
-        public StreakSystem(AudioSystem audioSystem, RenderWindow window, ConfigLoader config, CameraController cameraController)
+        public StreakSystem(SoundManager soundManager, RenderWindow window)
         {
-            this.audioSystem = audioSystem;
-            this.cameraController = cameraController;
-            this.window = window;
-            killStreak = 0;
-            streakClock = new Clock();
-
-            //font = new Font("Resources\\Fonts\\arial.ttf");
-            //streakText = new Text("", font, 20)
-            //{
-            //    FillColor = Color.Red,
-            //    Position = new Vector2f(10, 10)
-            //};
+            _soundManager = soundManager;
+            _window = window;
+            _killStreak = 0;
+            _streakClock = new Clock();
+            _bloodEffect = new RectangleShape(new Vector2f(5000, 5000))
+            {
+                FillColor = new Color(255, 0, 0, 0)
+            };
         }
 
-        public void OnKill(Entity killer, Entity victim)
+        public void OnKill()
         {
-            if (streakClock.ElapsedTime.AsSeconds() > 10)
+            if (_streakClock.ElapsedTime.AsSeconds() > 10)
             {
-                killStreak = 0;
-                firstBloodPlayed = true;
+                _killStreak = 0;
+                _firstBloodPlayed = true;
             }
 
-            killStreak++;
-            streakClock.Restart();
+            _killStreak++;
+            _streakClock.Restart();
 
-            if (killStreak == 1 && !firstBloodPlayed)
+            string soundKey = _killStreak switch
             {
-                audioSystem.PlayStreakSound("FirstBlood");
-                firstBloodPlayed = true;
+                1 when !_firstBloodPlayed => "FirstBlood",
+                2 => "DoubleKill",
+                3 => "TripleKill",
+                4 => "UltraKill",
+                5 => "Rampage",
+                _ => _killStreak > 5 ? "HolyShit" : ""
+            };
+
+            if (!string.IsNullOrEmpty(soundKey))
+            {
+                _soundManager.PlaySound(soundKey);
+                if (soundKey == "FirstBlood") _firstBloodPlayed = true;
             }
-            else if (killStreak == 2)
-                audioSystem.PlayStreakSound("DoubleKill");
-            else if (killStreak == 3)
-                audioSystem.PlayStreakSound("TripleKill");
-            else if (killStreak == 4)
-                audioSystem.PlayStreakSound("UltraKill");
-            else if (killStreak == 5)
-                audioSystem.PlayStreakSound("Rampage");
-            else if (killStreak >= 6)
-                audioSystem.PlayStreakSound("HolyShit");
 
-            audioSystem.PlayStreakSound("Kill");
-            ApplyBloodEffect();
-        }
-
-        private void ApplyBloodEffect()
-        {
-            window.Clear(new Color(255, 0, 0, 50));
+            _soundManager.PlaySound("Kill");
+            _bloodEffectAlpha = 100f;
         }
 
         public void Update()
         {
-            if (cameraController == null) return;
+            if (_bloodEffectAlpha > 0)
+            {
+                _bloodEffectAlpha -= 1f;
+                _bloodEffect.FillColor = new Color(255, 0, 0, (byte)_bloodEffectAlpha);
+            }
+        }
 
-            Vector2f cameraCenter = cameraController.GetView().Center;
-            Vector2f cameraSize = cameraController.GetView().Size;
+        public void Render()
+        {
+            if (_bloodEffectAlpha > 0)
+                _window.Draw(_bloodEffect);
         }
     }
 }

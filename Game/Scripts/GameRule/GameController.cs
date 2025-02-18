@@ -8,125 +8,106 @@ using Agar.io_sfml.Game.Scripts.GameObjects;
 using Agar.io_sfml.Game.Scripts.UI;
 using SFML.Graphics;
 using SFML.System;
+using GameConfig = Agar.io_sfml.Game.Scripts.Config.Config;
 
 namespace Agar.io_sfml.Game.Scripts.GameRule
 {
     public class GameController
     {
-        private Entity player;
-        private GameObjectManager gameObjectManager = new();
-        private AbilitySystem abilitySystem;
-        private FoodFactory foodFactory;
-        private EnemyFactory enemyFactory;
-        private InteractionHandler interactionHandler;
-        private PlayerUI playerUI;
-        private CameraController cameraController;
-        private Clock clock = new();
-        private Clock pauseClock = new();
-        private float timeSinceLastFoodSpawn;
-        private float foodSpawnInterval;
-        private AudioSystem audioSystem;
-        private StreakSystem streakSystem;
-        private bool isPaused = false;
-        private RectangleShape pauseOverlay;
-        private float pauseCooldown = 0.2f;
-        private float lastPauseTime = 0f;
+        private Entity _player;
+        private GameObjectManager _gameObjectManager = new();
+        private AbilitySystem _abilitySystem;
+        private FoodFactory _foodFactory;
+        private EnemyFactory _enemyFactory;
+        private InteractionHandler _interactionHandler;
+        private PlayerUI _playerUI;
+        private CameraController _cameraController;
+        private SoundManager _soundManager;
+        private StreakSystem _streakSystem;
+        private Clock _gameClock = new();
+        private float _timeSinceLastFoodSpawn;
+        private Clock _pauseClock = new();
+        private float _lastPauseTime;
+        private const float PauseCooldown = 0.2f;
+        private bool _isPaused;
 
-        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, ConfigLoader config)
+        public bool IsPaused => _isPaused;
+
+        public GameController(Entity player, FloatRect mapBorder, RenderWindow window, GameConfig config)
         {
-            this.player = player;
-            foodSpawnInterval = config.FoodSpawnInterval;
-            foodFactory = new FoodFactory(mapBorder, config.FoodConfigs);
-            enemyFactory = new EnemyFactory(mapBorder, config.EnemyMinSize, config.EnemyMaxSize, config.EnemyBaseSpeed);
+            _player = player;
+            _foodFactory = new FoodFactory(mapBorder, config.FoodConfigs);
+            _enemyFactory = new EnemyFactory(mapBorder, config.EnemyMinSize, config.EnemyMaxSize, config.EnemyBaseSpeed);
+            _abilitySystem = new AbilitySystem();
+            _soundManager = new SoundManager();
+            _cameraController = new CameraController(window, _player, mapBorder, config);
+            _streakSystem = new StreakSystem(_soundManager, window);
+            _interactionHandler = new InteractionHandler(config.MinPlayerRadius, _streakSystem, () => IsPaused);
+            _playerUI = new PlayerUI(window, new TextureManager(), _cameraController);
+            _playerUI.AddAbility(config.SwapAbilityButtonPath, () =>
+                _abilitySystem.ActivateAbility(_player, _gameObjectManager.GetAllObjects(), 0));
+            _playerUI.AddPauseButton(config.PauseButtonPath, TogglePause);
+
+            _soundManager.LoadBackgroundMusic(config.Audio.BackgroundMusic);
+            _soundManager.PlayBackgroundMusic();
+            _soundManager.SetMusicVolume(_soundManager.MusicVolume);
+            _soundManager.SetSoundVolume(_soundManager.SoundVolume);
+            foreach (var sound in config.Audio.StreakSounds)
+            {
+                _soundManager.LoadSound(sound.Key, sound.Value);
+            }
 
             for (int i = 0; i < config.EnemyCount; i++)
-                gameObjectManager.SpawnEnemy(enemyFactory.CreateEnemy());
-
-            abilitySystem = new AbilitySystem();
-            abilitySystem.AddAbility(new SwapAbility(config.SwapAbilityCooldown));
-
-            audioSystem = new AudioSystem();
-            audioSystem.LoadBackgroundMusic(config.BackgroundMusicPath);
-            audioSystem.LoadStreakSound("Kill", config.KillSoundPath);
-            audioSystem.LoadStreakSound("FirstBlood", config.FirstBloodSoundPath);
-            audioSystem.LoadStreakSound("DoubleKill", config.DoubleKillSoundPath);
-            audioSystem.LoadStreakSound("TripleKill", config.TripleKillSoundPath);
-            audioSystem.LoadStreakSound("UltraKill", config.UltraKillSoundPath);
-            audioSystem.LoadStreakSound("Rampage", config.RampageSoundPath);
-            audioSystem.LoadStreakSound("HolyShit", config.HolyShitSoundPath);
-            audioSystem.PlayBackgroundMusic();
-
-            cameraController = new CameraController(window, player, mapBorder, config);
-            streakSystem = new StreakSystem(audioSystem, window, config, cameraController);
-            interactionHandler = new InteractionHandler(config.MinPlayerRadius, streakSystem, this);
-
-            playerUI = new PlayerUI(window, new TextureManager(), cameraController);
-            playerUI.AddAbility(config.SwapAbilityButtonPath, () =>
             {
-                abilitySystem.ActivateAbility(player, gameObjectManager.GetAllObjects(), 0);
-            });
+                _gameObjectManager.SpawnEnemy(_enemyFactory.CreateEnemy());
+            }
 
-            playerUI.AddPauseButton(config.PauseButtonPath, TogglePause);
-            CreatePauseOverlay(window);
+            _abilitySystem.AddAbility(new SwapAbility(config.SwapAbilityCooldown));
         }
-
-        private void CreatePauseOverlay(RenderWindow window)
-        {
-            pauseOverlay = new RectangleShape(new Vector2f(window.Size.X, window.Size.Y))
-            {
-                FillColor = new Color(40, 40, 40, 150)
-            };
-        }
-
-        public void TogglePause()
-        {
-            float currentTime = pauseClock.ElapsedTime.AsSeconds();
-            if (currentTime - lastPauseTime < pauseCooldown)
-                return;
-
-            lastPauseTime = currentTime;
-            isPaused = !isPaused;
-        }
-
-        public bool IsPaused => isPaused;
 
         public void Update(RenderWindow window)
         {
-            playerUI.Update();
+            if (_isPaused) return;
 
-            if (isPaused) return;
+            float deltaTime = _gameClock.Restart().AsSeconds();
 
-            float deltaTime = clock.Restart().AsSeconds();
+            _player.Update(deltaTime);
+            _cameraController.Update(deltaTime);
 
-            player.Update(deltaTime);
-            cameraController.Update(deltaTime);
-
-            timeSinceLastFoodSpawn += deltaTime;
-            if (timeSinceLastFoodSpawn >= foodSpawnInterval)
+            _timeSinceLastFoodSpawn += deltaTime;
+            if (_timeSinceLastFoodSpawn >= _foodFactory.SpawnInterval)
             {
-                timeSinceLastFoodSpawn = 0f;
-                gameObjectManager.SpawnFood(foodFactory.CreateFood());
+                _timeSinceLastFoodSpawn = 0f;
+                _gameObjectManager.SpawnFood(_foodFactory.CreateFood());
             }
 
-            interactionHandler.HandleInteractions(player, gameObjectManager.GetAllObjects(), deltaTime);
-            gameObjectManager.UpdateObjects(deltaTime);
-            abilitySystem.Update(deltaTime);
-            streakSystem.Update();
+            _interactionHandler.HandleInteractions(_player, _gameObjectManager.GetAllObjects(), deltaTime);
+            _gameObjectManager.UpdateObjects(deltaTime);
+            _abilitySystem.Update(deltaTime);
+            _streakSystem.Update();
+            _playerUI.Update();
         }
 
         public void Render(RenderWindow window)
         {
-            cameraController.Apply();
-            player.Render(window);
-            gameObjectManager.RenderObjects(window);
+            _cameraController.Apply();
+            window.Clear(new Color(46, 47, 48));
+            _gameObjectManager.RenderObjects(window);
+            _player.Render(window);
+            _playerUI.Render();
+            _streakSystem.Render();
+        }
 
-            if (isPaused)
-            {
-                window.SetView(window.DefaultView);
-                window.Draw(pauseOverlay);
-                window.SetView(cameraController.GetView());
-            }
-            playerUI.Render();
+        public void TogglePause()
+        {
+            float currentTime = _pauseClock.ElapsedTime.AsSeconds();
+            if (currentTime - _lastPauseTime < PauseCooldown) return;
+            _lastPauseTime = currentTime;
+            _isPaused = !_isPaused;
+            if (_isPaused)
+                _soundManager.StopBackgroundMusic();
+            else
+                _soundManager.PlayBackgroundMusic();
         }
     }
 }
