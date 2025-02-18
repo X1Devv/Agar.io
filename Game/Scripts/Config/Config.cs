@@ -31,6 +31,7 @@ namespace Agar.io_sfml.Game.Scripts.Config
         public string SwapAbilityButtonPath { get; set; }
         public string PauseButtonPath { get; set; }
         public string FontPath { get; set; }
+        public string BackgroundTexturePath { get; set; }
 
         public class AudioConfig
         {

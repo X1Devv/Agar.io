@@ -56,6 +56,7 @@ namespace Agar.io_sfml.Game.Scripts.Config
             config.SwapAbilityButtonPath = GetValue(configData, "UI", "SwapAbilityButtonPath", "Resources/Textures/AbilityButton/SwapButton.png");
             config.PauseButtonPath = GetValue(configData, "UI", "PauseButtonPath", "Resources/Textures/AbilityButton/PauseButton.png");
             config.FontPath = GetValue(configData, "UI", "FontPath", "Resources/Fonts/arial.ttf");
+            config.BackgroundTexturePath = GetValue(configData, "UI", "BackgroundTexture", "Resources/Textures/Map/background.png");
 
             return config;
         }

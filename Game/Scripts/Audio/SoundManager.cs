@@ -7,7 +7,7 @@ namespace Agar.io_sfml.Game.Scripts.Audio
         private Dictionary<string, Sound> _sounds = new Dictionary<string, Sound>();
         private Music _backgroundMusic;
 
-        public float MusicVolume { get; private set; } = 20f;
+        public float MusicVolume { get; private set; } = 30f;
         public float SoundVolume { get; private set; } = 50f;
 
         public void LoadSound(string key, string path)

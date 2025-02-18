@@ -24,6 +24,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         private CameraController _cameraController;
         private SoundManager _soundManager;
         private StreakSystem _streakSystem;
+        private Sprite _mapBackground;
         private Clock _gameClock = new();
         private float _timeSinceLastFoodSpawn;
         private Clock _pauseClock = new();
@@ -52,6 +53,17 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             _soundManager.PlayBackgroundMusic();
             _soundManager.SetMusicVolume(_soundManager.MusicVolume);
             _soundManager.SetSoundVolume(_soundManager.SoundVolume);
+
+            var texture = new TextureManager().LoadTexture(config.BackgroundTexturePath);
+            _mapBackground = new Sprite(texture)
+            {
+                Position = new Vector2f(config.MapBounds.Left, config.MapBounds.Top),
+                Scale = new Vector2f(
+                    config.MapBounds.Width / texture.Size.X,
+                    config.MapBounds.Height / texture.Size.Y
+                )
+            };
+
             foreach (var sound in config.Audio.StreakSounds)
             {
                 _soundManager.LoadSound(sound.Key, sound.Value);
@@ -91,11 +103,11 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         public void Render(RenderWindow window)
         {
             _cameraController.Apply();
-            window.Clear(new Color(46, 47, 48));
+            window.Draw(_mapBackground);
             _gameObjectManager.RenderObjects(window);
             _player.Render(window);
             _playerUI.Render();
-            _streakSystem.Render();
+            _streakSystem.Render();;
         }
 
         public void TogglePause()
