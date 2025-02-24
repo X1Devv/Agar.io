@@ -1,5 +1,4 @@
-﻿using Agar.io_sfml.Game.Scripts.Config;
-using Agar.io_sfml.Game.Scripts.GameObjects;
+﻿using Agar.io_sfml.Engine.Core;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -10,25 +9,26 @@ namespace Agar.io_sfml.Engine.Camera
     {
         private View _cameraView;
         private RenderWindow _window;
-
-        private Entity _player;
+        private GameObject _target;
         private FloatRect _mapBorder;
-
         private float _cameraSmoothness;
 
         public float StartZoom { get; private set; }
         public float MinZoom { get; }
         public float MaxZoom { get; }
 
-        public CameraController(RenderWindow window, Entity player, FloatRect mapBorder, Config config)
+        /// <summary>
+        /// Initializes a new instance of the CameraController class
+        /// </summary>
+        public CameraController(RenderWindow window, GameObject target, FloatRect mapBorder, float smoothness, float startZoom, float minZoom, float maxZoom)
         {
             _window = window;
-            _player = player;
+            _target = target;
             _mapBorder = mapBorder;
-            _cameraSmoothness = config.CameraSmoothness;
-            MinZoom = config.CameraMinZoom;
-            MaxZoom = config.CameraMaxZoom;
-            StartZoom = config.StartZoom;
+            _cameraSmoothness = smoothness;
+            MinZoom = minZoom;
+            MaxZoom = maxZoom;
+            StartZoom = startZoom;
 
             _cameraView = new View(_window.GetView());
             UpdateViewSize();
@@ -42,17 +42,26 @@ namespace Agar.io_sfml.Engine.Camera
             else AdjustZoom(50);
         }
 
+        /// <summary>
+        /// Adjusts the camera zoom level
+        /// </summary>
         public void AdjustZoom(float delta)
         {
             StartZoom = Math.Clamp(StartZoom + delta, MinZoom, MaxZoom);
             UpdateViewSize();
         }
 
+        /// <summary>
+        /// Gets the current camera view
+        /// </summary>
         public View GetView() => _cameraView;
 
+        /// <summary>
+        /// Updates the camera position and zoom
+        /// </summary>
         public void Update(float deltaTime)
         {
-            Vector2f targetPosition = _player.Position;
+            Vector2f targetPosition = _target.Position;
             Vector2f currentCenter = _cameraView.Center;
             Vector2f newCenter = currentCenter + (targetPosition - currentCenter) * _cameraSmoothness * deltaTime;
 
@@ -64,7 +73,13 @@ namespace Agar.io_sfml.Engine.Camera
             _cameraView.Center = newCenter;
         }
 
-        public void Apply() => _window.SetView(_cameraView);
+        /// <summary>
+        /// Applies the camera view to the window
+        /// </summary>
+        public void Apply()
+        {
+            _window.SetView(_cameraView);
+        }
 
         private void UpdateViewSize()
         {

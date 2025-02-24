@@ -1,37 +1,36 @@
-﻿using Agar.io_sfml.Game.Scripts.GameRule;
-using SFML.Graphics;
+﻿using SFML.Graphics;
+using Agar.io_sfml.Engine.Interfaces;
 
-namespace Agar.io_sfml.Game
+namespace Agar.io_sfml.Engine.Core
 {
     public class GameLoop
     {
-        private RenderWindow window;
-        private GameController gameController;
+        private readonly RenderWindow _window;
+        private readonly IGameController _gameController;
 
-        public GameLoop(GameController gameController, RenderWindow window)
+        /// <summary>
+        /// Initializes a new instance of the GameLoop class
+        /// </summary>
+        public GameLoop(IGameController gameController, RenderWindow window)
         {
-            this.gameController = gameController;
-            this.window = window;
-            window.SetFramerateLimit(180);
-            window.Closed += WindowClosed;
+            _gameController = gameController;
+            _window = window;
+            _window.SetFramerateLimit(180);
+            _window.Closed += (sender, e) => _window.Close();
         }
 
+        /// <summary>
+        /// Runs the game loop
+        /// </summary>
         public void Run()
         {
-            while (window.IsOpen)
+            while (_window.IsOpen)
             {
-                window.DispatchEvents();
-                window.Clear(new Color(46, 47, 48));
-                gameController.Update(window);
-                gameController.Render(window);
-                window.Display();
+                _window.DispatchEvents();
+                _gameController.Update(_window);
+                _gameController.Render(_window);
+                _window.Display();
             }
-        }
-
-        private void WindowClosed(object sender, EventArgs e)
-        {
-            RenderWindow w = (RenderWindow)sender;
-            w.Close();
         }
     }
 }

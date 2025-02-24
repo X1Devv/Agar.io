@@ -1,5 +1,4 @@
 ﻿using SFML.Audio;
-using static Agar.io_sfml.Game.Scripts.Config.Config;
 
 namespace Agar.io_sfml.Game.Scripts.Audio
 {
@@ -8,9 +7,14 @@ namespace Agar.io_sfml.Game.Scripts.Audio
         private Music backgroundMusic;
         private Dictionary<string, Sound> streakSounds;
 
-        public AudioSystem(AudioConfig audioConfig)
+        public AudioSystem(Config.Config.AudioConfig audioConfig)
         {
             streakSounds = new Dictionary<string, Sound>();
+            LoadBackgroundMusic(audioConfig.BackgroundMusic);
+            foreach (var sound in audioConfig.StreakSounds)
+            {
+                LoadStreakSound(sound.Key, sound.Value);
+            }
         }
 
         public void LoadBackgroundMusic(string path)
@@ -26,7 +30,7 @@ namespace Agar.io_sfml.Game.Scripts.Audio
 
         public void StopBackgroundMusic()
         {
-            backgroundMusic.Stop();
+            backgroundMusic?.Stop();
         }
 
         public void LoadStreakSound(string key, string path)

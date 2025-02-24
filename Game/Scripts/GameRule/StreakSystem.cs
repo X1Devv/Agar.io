@@ -8,22 +8,14 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
     {
         private int _killStreak;
         private SoundManager _soundManager;
-        private RenderWindow _window;
         private Clock _streakClock;
         private bool _firstBloodPlayed = false;
-        private RectangleShape _bloodEffect;
-        private float _bloodEffectAlpha = 0f;
 
         public StreakSystem(SoundManager soundManager, RenderWindow window)
         {
             _soundManager = soundManager;
-            _window = window;
             _killStreak = 0;
             _streakClock = new Clock();
-            _bloodEffect = new RectangleShape(new Vector2f(5000, 5000))
-            {
-                FillColor = new Color(255, 0, 0, 0)
-            };
         }
 
         public void OnKill()
@@ -54,22 +46,10 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             }
 
             _soundManager.PlaySound("Kill");
-            _bloodEffectAlpha = 100f;
         }
 
-        public void Update()
-        {
-            if (_bloodEffectAlpha > 0)
-            {
-                _bloodEffectAlpha -= 1f;
-                _bloodEffect.FillColor = new Color(255, 0, 0, (byte)_bloodEffectAlpha);
-            }
-        }
+        public void Update() { }
 
-        public void Render()
-        {
-            if (_bloodEffectAlpha > 0)
-                _window.Draw(_bloodEffect);
-        }
+        public void Render() { }
     }
 }

@@ -7,8 +7,8 @@ namespace Agar.io_sfml.Game.Scripts.Audio
         private Dictionary<string, Sound> _sounds = new Dictionary<string, Sound>();
         private Music _backgroundMusic;
 
-        public float MusicVolume { get; private set; } = 30f;
-        public float SoundVolume { get; private set; } = 50f;
+        public float MusicVolume { get; private set; } = 20f;
+        public float SoundVolume { get; private set; } = 30f;
 
         public void LoadSound(string key, string path)
         {
@@ -18,10 +18,7 @@ namespace Agar.io_sfml.Game.Scripts.Audio
             }
 
             SoundBuffer buffer = new SoundBuffer(path);
-            Sound sound = new Sound(buffer)
-            {
-                Volume = SoundVolume
-            };
+            Sound sound = new Sound(buffer) { Volume = SoundVolume };
             _sounds[key] = sound;
         }
 
@@ -39,34 +36,12 @@ namespace Agar.io_sfml.Game.Scripts.Audio
 
         public void LoadBackgroundMusic(string path)
         {
-            _backgroundMusic = new Music(path)
-            {
-                Loop = true,
-                Volume = MusicVolume
-            };
+            _backgroundMusic = new Music(path) { Loop = true, Volume = MusicVolume };
         }
 
         public void PlayBackgroundMusic() => _backgroundMusic?.Play();
 
         public void StopBackgroundMusic() => _backgroundMusic?.Stop();
-
-        public void SetMusicVolume(float volume)
-        {
-            MusicVolume = Math.Clamp(volume, 0f, 10f);
-            if (_backgroundMusic != null)
-            {
-                _backgroundMusic.Volume = MusicVolume;
-            }
-        }
-
-        public void SetSoundVolume(float volume)
-        {
-            SoundVolume = Math.Clamp(volume, 0f, 10f);
-            foreach (var sound in _sounds.Values)
-            {
-                sound.Volume = SoundVolume;
-            }
-        }
 
         public void Dispose()
         {

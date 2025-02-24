@@ -45,11 +45,11 @@ namespace Agar.io_sfml.Game.Scripts.UI
         public void Update()
         {
             Vector2i mousePosition = Mouse.GetPosition(window);
-            Vector2f worldMousePosition = window.MapPixelToCoords(mousePosition);
+            Vector2f screenMousePosition = window.MapPixelToCoords(mousePosition, window.DefaultView);
 
             if (Mouse.IsButtonPressed(Mouse.Button.Left))
             {
-                if (pauseButton.GetGlobalBounds().Contains(worldMousePosition.X, worldMousePosition.Y))
+                if (pauseButton.GetGlobalBounds().Contains(screenMousePosition.X, screenMousePosition.Y))
                 {
                     onPauseClick?.Invoke();
                     return;
@@ -57,7 +57,7 @@ namespace Agar.io_sfml.Game.Scripts.UI
 
                 foreach (var (button, onClick) in abilityButtons)
                 {
-                    if (button.GetGlobalBounds().Contains(worldMousePosition.X, worldMousePosition.Y))
+                    if (button.GetGlobalBounds().Contains(screenMousePosition.X, screenMousePosition.Y))
                     {
                         onClick?.Invoke();
                         break;
@@ -69,39 +69,29 @@ namespace Agar.io_sfml.Game.Scripts.UI
             UpdatePauseButtonPosition();
         }
 
-
         public void Render()
         {
+            var defaultView = window.DefaultView;
+            window.SetView(defaultView);
             foreach (var (button, _) in abilityButtons)
             {
                 window.Draw(button);
             }
-
             window.Draw(pauseButton);
+            window.SetView(cameraController.GetView());
         }
 
         private void UpdateButtonPositions()
         {
-            Vector2f cameraPosition = cameraController.GetView().Center;
-
             for (int i = 0; i < abilityButtons.Count; i++)
             {
-                float offsetX = -window.Size.X / 2 + 30;
-                float offsetY = -window.Size.Y / 2 + 580 + i * 70;
-                Vector2f buttonPosition = new Vector2f(cameraPosition.X + offsetX, cameraPosition.Y + offsetY);
-                abilityButtons[i].button.Position = buttonPosition;
+                abilityButtons[i].button.Position = new Vector2f(30, window.Size.Y - 70 * (abilityButtons.Count - i));
             }
         }
 
         private void UpdatePauseButtonPosition()
         {
-            Vector2f cameraPosition = cameraController.GetView().Center;
-            float offsetX = window.Size.X / 2 - 50;
-            float offsetY = -window.Size.Y / 2 + 50;
-            pauseButton.Position = new Vector2f(
-                cameraPosition.X + offsetX,
-                cameraPosition.Y + offsetY
-            );
+            pauseButton.Position = new Vector2f(window.Size.X - 50, 50);
         }
     }
 }

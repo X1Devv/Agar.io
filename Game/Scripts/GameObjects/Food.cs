@@ -18,12 +18,7 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
             FoodColor = color;
             GrowthBonus = growthBonus;
 
-            shape = new CircleShape(Size)
-            {
-                FillColor = FoodColor,
-                Origin = new Vector2f(Size / 2, Size / 2),
-                Position = position
-            };
+            shape = new CircleShape(Size) { FillColor = FoodColor, Origin = new Vector2f(Size / 2, Size / 2), Position = position };
         }
 
         public int GetGrowthBonus() => GrowthBonus;
@@ -33,6 +28,11 @@ namespace Agar.io_sfml.Game.Scripts.GameObjects
         public override void Render(RenderWindow window)
         {
             window.Draw(shape);
+        }
+
+        public override float GetCollisionRadius()
+        {
+            return Size;
         }
     }
 }

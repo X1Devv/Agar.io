@@ -7,12 +7,18 @@ namespace Agar.io_sfml.Engine.Utils
     {
         private string _configPath;
 
+        /// <summary>
+        /// Initializes a new instance of the ConfigLoader class
+        /// </summary>
         public ConfigLoader(string configPath)
         {
             string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", ".."));
             _configPath = Path.Combine(projectRoot, configPath);
         }
 
+        /// <summary>
+        /// Loads configuration data from an INI file
+        /// </summary>
         public Dictionary<string, Dictionary<string, string>> Load()
         {
             var parser = new FileIniDataParser();

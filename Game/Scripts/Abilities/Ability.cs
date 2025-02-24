@@ -1,10 +1,9 @@
 ﻿using Agar.io_sfml.Engine.Core;
-using Agar.io_sfml.Engine.Interfaces;
 using Agar.io_sfml.Game.Scripts.GameObjects;
 
 namespace Agar.io_sfml.Game.Scripts.Abilities
 {
-    public abstract class Ability : IAbility
+    public abstract class Ability
     {
         public float Cooldown { get; protected set; }
         public float CurrentCooldown { get; protected set; }

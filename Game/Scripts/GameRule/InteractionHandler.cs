@@ -40,7 +40,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
         {
             if (food.CollidesWith(player))
             {
-                player.Grow(ReductionOfGrowthBeyondTheRadius(player.GetRadius(), food.GetGrowthBonus()));
+                player.Grow(food.GetGrowthBonus(), false);
                 gameObjects.RemoveAt(index);
                 return;
             }
@@ -49,7 +49,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
             {
                 if (obj is Entity enemy && enemy.IsEnemy && food.CollidesWith(enemy))
                 {
-                    enemy.Grow(ReductionOfGrowthBeyondTheRadius(enemy.GetRadius(), food.GetGrowthBonus()));
+                    enemy.Grow(food.GetGrowthBonus(), false);
                     gameObjects.RemoveAt(index);
                     break;
                 }
@@ -68,8 +68,8 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
 
                 if (playerRadius > enemyRadius)
                 {
-                    float growthAmount = ReductionOfGrowthBeyondTheRadius(playerRadius, overlap);
-                    player.Grow(growthAmount);
+                    float growthAmount = overlap;
+                    player.Grow(growthAmount, true);
                     enemy.SetRadius(enemyRadius - overlap);
 
                     if (enemy.GetRadius() <= _minPlayerSize)
@@ -80,7 +80,7 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                 }
                 else if (enemyRadius > playerRadius)
                 {
-                    float shrinkAmount = ReductionOfGrowthBeyondTheRadius(enemyRadius, overlap);
+                    float shrinkAmount = overlap;
                     player.SetRadius(playerRadius - shrinkAmount);
 
                     if (player.GetRadius() <= _minPlayerSize)
@@ -89,11 +89,6 @@ namespace Agar.io_sfml.Game.Scripts.GameRule
                     }
                 }
             }
-        }
-
-        private float ReductionOfGrowthBeyondTheRadius(float currentRadius, float initialGrowth)
-        {
-            return initialGrowth / (1 + currentRadius * 0.05f);
         }
     }
 }

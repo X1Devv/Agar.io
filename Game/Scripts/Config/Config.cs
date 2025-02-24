@@ -33,6 +33,11 @@ namespace Agar.io_sfml.Game.Scripts.Config
         public string FontPath { get; set; }
         public string BackgroundTexturePath { get; set; }
 
+        public string DefaultPlayerSkinPath { get; set; }
+        public string DefaultEnemySkinPath { get; set; }
+        public int PlayerSkinCount { get; set; }
+        public Dictionary<int, string> PlayerSkinPaths { get; set; }
+
         public class AudioConfig
         {
             public string BackgroundMusic { get; set; }
