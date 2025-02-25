@@ -85,7 +85,7 @@ namespace Agar.io_sfml.Game.Scripts.UI
         {
             for (int i = 0; i < abilityButtons.Count; i++)
             {
-                abilityButtons[i].button.Position = new Vector2f(30, window.Size.Y - 70 * (abilityButtons.Count - i));
+                abilityButtons[i].button.Position = new Vector2f(30, window.Size.Y - 200 * (abilityButtons.Count - i));
             }
         }
 
